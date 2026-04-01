@@ -27,7 +27,7 @@ namespace Negocio
             conexion = new SqlConnection("server=.\\SQLEXPRESS; database=CATALOGO_WEB_DB; integrated security=true; TrustServerCertificate=True");
             comando = new SqlCommand();
         }
-
+        
         //Métodos de configuración
         public void SetearConsulta(string consulta)
         {
