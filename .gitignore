@@ -1,0 +1,54 @@
+# ==========================================
+# APUNTES Y ARCHIVOS PERSONALES 
+# ==========================================
+
+# *.docx
+
+# ==========================================
+# CARPETAS DE VISUAL STUDIO Y COMPILACIÓN
+# ==========================================
+.vs/
+.vscode/
+bin/
+obj/
+Debug/
+Release/
+
+# ==========================================
+# ARCHIVOS DE CONFIGURACIÓN Y CACHÉ
+# ==========================================
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.vsidx
+*.dbmdl
+*.bak
+*.log
+*.local
+*.cache
+*.pdb
+
+# ==========================================
+# PAQUETES NUGET Y PUBLICACIÓN
+# ==========================================
+packages/
+*.nupkg
+*.snupkg
+.publish/
+*.pubxml
+*.pubxml.user
+
+# ==========================================
+# ARCHIVOS DE IIS Y OTROS
+# ==========================================
+_IISExpress/
+*.vspscc
+*.vssscc
+TestResults/
+*.coverage
+*.coveragexml
+*.swp
+*.tmp
+*.temp
+claves.config

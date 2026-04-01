@@ -1,0 +1,81 @@
+﻿<%@ Master Language="C#" AutoEventWireup="true" CodeBehind="MasterPage.master.cs" Inherits="e_commerce.MasterPage" %>
+<!DOCTYPE html>
+<html>
+<head runat="server">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Mi E-Commerce</title>
+    
+    <%-- boostrap css --%>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+
+    <asp:ContentPlaceHolder ID="head" runat="server">
+    </asp:ContentPlaceHolder>
+</head>
+<body class="d-flex flex-column min-vh-100">
+    <form id="form1" runat="server" class="d-flex flex-column flex-grow-1">
+        
+        <%-- navbar de boostrap --%>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+          <div class="container">
+            <a class="navbar-brand" href="Default.aspx">🛒 Mi Tienda Virtual</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+              <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                  <a class="nav-link active" href="Default.aspx">Catálogo</a>
+                </li>
+              </ul>
+              
+             <%-- btn dinámicos --%>
+              <div class="d-flex align-items-center">
+                  
+                 
+                  <% if (!Negocio.Seguridad.sesionActiva(Session["usuario"])) { %>
+                      
+                      <a href="Login.aspx" class="btn btn-outline-light me-2">Iniciar Sesión</a>
+                      
+                  
+                      <a href="Registro.aspx" class="btn btn-primary fw-bold">Registrarse</a>
+                  
+                  <% } else { %>
+                      
+                     
+                      <% if (Negocio.Seguridad.esAdmin(Session["usuario"])) { %>
+                          <a href="ArticulosLista.aspx" class="btn btn-warning me-3 fw-bold">⚙ Administrar Catálogo</a>
+                      <% } %>
+                      
+                      <%-- zona del usuario logueado (avatar, nombre, Mi Perfil y salir) --%>
+                      <asp:Image ID="imgAvatar" runat="server" CssClass="me-2 rounded-circle border border-2 border-secondary" Style="height: 40px; width: 40px; object-fit: cover;" />
+                      <asp:Label ID="lblUser" runat="server" CssClass="text-light me-3 fw-bold"></asp:Label>
+                      
+                      <%-- btn miPerfil --%>
+                      <a href="MiPerfil.aspx" class="btn btn-sm btn-outline-info me-3">👤 Mi Perfil</a>
+                      <a href="Favoritos.aspx" class="btn btn-sm btn-outline-warning me-3">❤️ Favoritos</a>
+                      
+                      <asp:Button Text="Salir" ID="btnSalir" CssClass="btn btn-sm btn-outline-danger" OnClick="btnSalir_Click" runat="server" />
+                  
+                  <% } %>
+              </div>
+
+            </div> </div> </nav> <%-- contenedor ppal de las otras páginas --%>
+        <div class="container mt-4 flex-grow-1">
+            <asp:ContentPlaceHolder ID="MainContent" runat="server">
+            </asp:ContentPlaceHolder>
+        </div>
+
+        <%-- footer  --%>
+        <footer class="bg-dark text-white text-center py-3 mt-auto">
+            <div class="container">
+                <p class="mb-0">&copy; <%: DateTime.Now.Year %> - Tienda de Lucho. Todos los derechos reservados.</p>
+            </div>
+        </footer>
+
+    </form>
+
+    <%-- boostrap js --%>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+</body>
+</html>
