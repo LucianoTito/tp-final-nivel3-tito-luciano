@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.Data.SqlClient;
 
 
 namespace Negocio
@@ -24,10 +25,12 @@ namespace Negocio
 
         public AccesoDatos()
         {
-            conexion = new SqlConnection("server=.\\SQLEXPRESS; database=CATALOGO_WEB_DB; integrated security=true; TrustServerCertificate=True");
+            conexion = new SqlConnection(
+                System.Configuration.ConfigurationManager.ConnectionStrings["conexionDB"].ConnectionString
+            );
             comando = new SqlCommand();
         }
-        
+
         //Métodos de configuración
         public void SetearConsulta(string consulta)
         {
