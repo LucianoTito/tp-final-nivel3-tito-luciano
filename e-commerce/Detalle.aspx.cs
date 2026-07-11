@@ -13,8 +13,8 @@ namespace e_commerce
 
     {
 
-        
-        public Articulo ArticuloSeleccionado {  get; set; }
+
+        public Articulo ArticuloSeleccionado { get; set; }
         protected void Page_Load(object sender, EventArgs e)
         {
             try
@@ -25,7 +25,9 @@ namespace e_commerce
 
                     ArticuloNegocio negocio = new ArticuloNegocio();
 
-                    ArticuloSeleccionado = negocio.Listar().Find(x => x.Id == id);
+                    //Traigo solo el artículo pedido (consulta parametrizada), no todo el catálogo.
+                    //Si no existe, ObtenerPorId devuelve null y la vista muestra el cartel "no encontrado".
+                    ArticuloSeleccionado = negocio.ObtenerPorId(id);
                 }
 
             }
@@ -34,7 +36,7 @@ namespace e_commerce
                 Session.Add("error", "Hubo un problema al cargar el detalle del artículo. Es posible que no exista o que haya un problema de conexión.");
                 Response.Redirect("Error.aspx", false);
             }
-            
+
         }
     }
 }

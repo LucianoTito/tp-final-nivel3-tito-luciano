@@ -12,7 +12,7 @@ namespace e_commerce
 {
     public partial class ArticulosLista : System.Web.UI.Page
     {
-        public bool FiltroAvanzado {  get; set; }
+        public bool FiltroAvanzado { get; set; }
         protected void Page_Load(object sender, EventArgs e)
         {
             FiltroAvanzado = chkAvanzado.Checked;
@@ -29,13 +29,17 @@ namespace e_commerce
             //Cargo los datos
             try
             {
-                if(!IsPostBack)
+                if (!IsPostBack)
                 {
                     ArticuloNegocio negocio = new ArticuloNegocio();
 
-                    Session.Add("listaArticulos", negocio.Listar());
+                    //Una sola ida a la base: reutilizo la misma lista para la Session y para la grilla.
+                
+                    List<Articulo> articulos = negocio.Listar();
 
-                    dgvArticulos.DataSource = negocio.Listar();
+                    Session.Add("listaArticulos", articulos);
+
+                    dgvArticulos.DataSource = articulos;
                     dgvArticulos.DataBind();
 
                     if (dgvArticulos.Rows.Count > 0)
@@ -48,19 +52,20 @@ namespace e_commerce
             catch (Exception ex)
             {
 
-                Session.Add("error", "Ocurrió un error al intentar cargar la lista de artículos: " + ex.Message);
-                Response.Redirect("Error.aspx", false );
+                System.Diagnostics.Debug.WriteLine(ex.ToString());
+                Session.Add("error", "No se pudo cargar la lista de artículos. Intentá nuevamente.");
+                Response.Redirect("Error.aspx", false);
             }
         }
 
-        protected void dgvArticulos_SelectedIndexChanged (object sender, EventArgs e)
+        protected void dgvArticulos_SelectedIndexChanged(object sender, EventArgs e)
         {
             string id = dgvArticulos.SelectedDataKey.Value.ToString();
 
             Response.Redirect("ArticuloForm.aspx?id=" + id, false);
         }
 
-        protected void txtFiltro_TextChanged (object sender, EventArgs e)
+        protected void txtFiltro_TextChanged(object sender, EventArgs e)
         {
             List<Articulo> lista = (List<Articulo>)Session["listaArticulos"];
 
@@ -73,13 +78,20 @@ namespace e_commerce
             dgvArticulos.DataBind();
         }
 
-        protected void chkAvanzado_CheckedChanged (object sender, EventArgs e)
+        protected void chkAvanzado_CheckedChanged(object sender, EventArgs e)
         {
             //alterno la visibilidad y apago la textbx del filtro rápido
             FiltroAvanzado = chkAvanzado.Checked;
             txtFiltro.Enabled = !FiltroAvanzado;
+
+            //Al activar el filtro avanzado, precargo los criterios segun el campo por defecto ("Código").
+            //Sin esto, ddlCriterio queda vacío y al presionar Buscar sin tocar el campo explota (NullReference).
+            if (FiltroAvanzado)
+            {
+                ddlCampo_SelectedIndexChanged(sender, e);
+            }
         }
-        protected void btnLimpiarRapido_Click (object sender, EventArgs e)
+        protected void btnLimpiarRapido_Click(object sender, EventArgs e)
         {
             txtFiltro.Text = "";
 
@@ -87,9 +99,9 @@ namespace e_commerce
             dgvArticulos.DataBind();
         }
 
-        protected void ddlCampo_SelectedIndexChanged (object sender, EventArgs e)
+        protected void ddlCampo_SelectedIndexChanged(object sender, EventArgs e)
         {
-            ddlCriterio.Items.Clear();  
+            ddlCriterio.Items.Clear();
 
             if (ddlCampo.SelectedItem.ToString() == "Precio")
             {
@@ -105,10 +117,18 @@ namespace e_commerce
             }
         }
 
-        protected void btnBuscar_Click (object sender, EventArgs e)
+        protected void btnBuscar_Click(object sender, EventArgs e)
         {
             try
             {
+                //Guarda defensiva: si no hay campo o criterio seleccionado, aviso y salgo (evita NullReference).
+                if (ddlCampo.SelectedItem == null || ddlCriterio.SelectedItem == null)
+                {
+                    Session.Add("error", "Seleccioná un campo y un criterio antes de ejecutar la búsqueda.");
+                    Response.Redirect("Error.aspx", false);
+                    return;
+                }
+
                 ArticuloNegocio negocio = new ArticuloNegocio();
 
                 //llamo a la bd pasandole los 3 parámetros
@@ -124,23 +144,24 @@ namespace e_commerce
             catch (Exception ex)
             {
 
-                Session.Add("error", "Error al ejecutar el filtro avanzado: " + ex.Message);
-                Response.Redirect("Error.aspx", false );
+                System.Diagnostics.Debug.WriteLine(ex.ToString());
+                Session.Add("error", "No se pudo ejecutar el filtro avanzado. Intentá nuevamente.");
+                Response.Redirect("Error.aspx", false);
             }
         }
 
-        protected void btnLimpiar_Click (object sender, EventArgs e)
+        protected void btnLimpiar_Click(object sender, EventArgs e)
         {
             txtFiltro.Text = "";
             txtFiltroAvanzado.Text = "";
 
-            chkAvanzado.Checked=false;
+            chkAvanzado.Checked = false;
             FiltroAvanzado = false;
 
             txtFiltro.Enabled = true;
             btnLimpiarRapido.Enabled = true;
 
-            ddlCampo.SelectedIndex= 0;
+            ddlCampo.SelectedIndex = 0;
             ddlCampo_SelectedIndexChanged(sender, e);
 
             dgvArticulos.DataSource = Session["listaArticulos"];
