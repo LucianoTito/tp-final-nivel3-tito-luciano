@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+  PLANTILLA. Copiá este archivo como "claves.config" (en la misma carpeta que el Web.config)
+  y completá tu cadena de conexión real. El archivo claves.config NO se sube al repositorio.
+-->
+<connectionStrings>
+	<add name="conexionDB"
+		 connectionString="Server=TU_SERVIDOR;Database=CATALOGO_WEB_DB;User Id=TU_USUARIO;Password=TU_PASSWORD;TrustServerCertificate=True;Connection Timeout=30;"
+		 providerName="System.Data.SqlClient" />
+</connectionStrings>

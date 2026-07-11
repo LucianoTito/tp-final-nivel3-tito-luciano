@@ -253,6 +253,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="MasterPage.Master" />
+    <Content Include="claves.config" />
+    <Content Include="claves.config.example" />
     <None Include="packages.config" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
