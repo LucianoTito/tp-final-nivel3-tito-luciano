@@ -25,7 +25,7 @@ namespace Negocio
                 //Mapeo de la tabla sql a la clase Articulo
                 while (datos.Lector.Read())
                 {
-                        lista.Add(MapearArticulo(datos)); //El método MapearArticulo se encarga de crear un nuevo objeto Articulo y asignarle los valores correspondientes a cada propiedad, utilizando los datos obtenidos del lector de la consulta SQL.
+                    lista.Add(MapearArticulo(datos)); //El método MapearArticulo se encarga de crear un nuevo objeto Articulo y asignarle los valores correspondientes a cada propiedad, utilizando los datos obtenidos del lector de la consulta SQL.
                 }
 
                 return lista;
@@ -41,7 +41,41 @@ namespace Negocio
             }
         }
 
-        //El método Filtrar permite realizar búsquedas específicas en la base de datos según el campo, criterio y filtro proporcionados. Construye dinámicamente la consulta SQL en función de los parámetros y luego ejecuta la consulta para obtener los resultados filtrados.
+        //Trae UN solo artículo por su Id con una consulta parametrizada.
+        public Articulo ObtenerPorId(int id)
+        {
+            Articulo articulo = null;
+            AccesoDatos datos = new AccesoDatos();
+
+            try
+            {
+                string consulta = "SELECT A.Id, A.Codigo, A.Nombre, A.Descripcion, A.IdMarca, M.Descripcion AS Marca, A.IdCategoria, C.Descripcion AS Categoria, A.ImagenUrl, A.Precio " +
+                    "FROM ARTICULOS A INNER JOIN MARCAS M ON A.IdMarca = M.Id " +
+                    "INNER JOIN CATEGORIAS C ON A.IdCategoria = C.Id " +
+                    "WHERE A.Id = @id";
+
+                datos.SetearConsulta(consulta);
+                datos.SetearParametro("@id", id);
+                datos.EjecutarLectura();
+
+                if (datos.Lector.Read())
+                {
+                    articulo = MapearArticulo(datos);
+                }
+
+                return articulo; 
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+            finally
+            {
+                datos.CerrarConexion();
+            }
+        }
+
+        //El método Filtrar permite realizar búsquedas específicas en la base de datos según el campo, criterio y filtro proporcionados.
         public List<Articulo> Filtrar(string campo, string criterio, string filtro)
         {
             List<Articulo> lista = new List<Articulo>();
@@ -49,83 +83,51 @@ namespace Negocio
 
             try
             {
-                
                 string consulta = "SELECT A.Id, A.Codigo, A.Nombre, A.Descripcion, A.IdMarca, M.Descripcion AS Marca, A.IdCategoria, C.Descripcion AS Categoria, A.ImagenUrl, A.Precio FROM ARTICULOS A INNER JOIN MARCAS M ON A.IdMarca = M.Id INNER JOIN CATEGORIAS C ON A.IdCategoria = C.Id WHERE ";
 
                 if (campo == "Precio")
                 {
+                    // El precio debe ser numérico. Si no lo es, corto acá (evita romper la consulta y cualquier intento de inyección).
+                    if (!decimal.TryParse(filtro, out decimal precio))
+                        throw new ArgumentException("El valor del filtro de precio no es un número válido.");
+
+                    // El operador sale de una whitelist, NO de lo que escriba el usuario.
+                    string operador;
                     switch (criterio)
                     {
-                        case "Mayor a":
-                            consulta += "A.Precio > " + filtro;
-                            break;
-                        case "Menor a":
-                            consulta += "A.Precio < " + filtro;
-                            break;
-                        default: // "Igual a"
-                            consulta += "A.Precio = " + filtro;
-                            break;
+                        case "Mayor a": operador = ">"; break;
+                        case "Menor a": operador = "<"; break;
+                        default: operador = "="; break; 
                     }
+
+                    consulta += "A.Precio " + operador + " @filtro";
+                    datos.SetearParametro("@filtro", precio);
                 }
-                else if (campo == "Nombre")
+                else
                 {
+                    // La COLUMNA sale de una whitelist. Si llega un campo desconocido, corto.
+                    string columna;
+                    switch (campo)
+                    {
+                        case "Nombre": columna = "A.Nombre"; break;
+                        case "Marca": columna = "M.Descripcion"; break;
+                        case "Categoría": columna = "C.Descripcion"; break;
+                        case "Código": columna = "A.Codigo"; break;
+                        default:
+                            throw new ArgumentException("El campo de búsqueda no es válido.");
+                    }
+
+                    // El PATRÓN del LIKE se arma en C# y viaja como parámetro. El % no se concatena a la consulta cruda.
+                    string patron;
                     switch (criterio)
                     {
-                        case "Empieza con":
-                            consulta += "A.Nombre LIKE '" + filtro + "%'";
-                            break;
-                        case "Termina con":
-                            consulta += "A.Nombre LIKE '%" + filtro + "'";
-                            break;
-                        default: // "Contiene"
-                            consulta += "A.Nombre LIKE '%" + filtro + "%'";
-                            break;
+                        case "Empieza con": patron = filtro + "%"; break;
+                        case "Termina con": patron = "%" + filtro; break;
+                        default: patron = "%" + filtro + "%"; break;
                     }
-                }
-                else if (campo == "Marca")
-                {
-                    switch (criterio)
-                    {
-                        case "Empieza con":
-                            consulta += "M.Descripcion LIKE '" + filtro + "%'";
-                            break;
-                        case "Termina con":
-                            consulta += "M.Descripcion LIKE '%" + filtro + "'";
-                            break;
-                        default: // "Contiene"
-                            consulta += "M.Descripcion LIKE '%" + filtro + "%'";
-                            break;
-                    }
-                }
-                else if (campo == "Categoría") 
-                {
-                    switch (criterio)
-                    {
-                        case "Empieza con":
-                            consulta += "C.Descripcion LIKE '" + filtro + "%'"; 
-                            break;
-                        case "Termina con":
-                            consulta += "C.Descripcion LIKE '%" + filtro + "'"; 
-                            break;
-                        default: // "Contiene"
-                            consulta += "C.Descripcion LIKE '%" + filtro + "%'"; 
-                            break;
-                    }
-                }
-                else if (campo == "Código") 
-                {
-                    switch (criterio)
-                    {
-                        case "Empieza con":
-                            consulta += "A.Codigo LIKE '" + filtro + "%'";
-                            break;
-                        case "Termina con":
-                            consulta += "A.Codigo LIKE '%" + filtro + "'";
-                            break;
-                        default: // "Contiene"
-                            consulta += "A.Codigo LIKE '%" + filtro + "%'";
-                            break;
-                    }
+
+                    consulta += columna + " LIKE @filtro";
+                    datos.SetearParametro("@filtro", patron);
                 }
 
                 datos.SetearConsulta(consulta);
@@ -133,7 +135,7 @@ namespace Negocio
 
                 while (datos.Lector.Read())
                 {
-                    lista.Add(MapearArticulo(datos)); 
+                    lista.Add(MapearArticulo(datos));
                 }
 
                 return lista;
@@ -222,7 +224,7 @@ namespace Negocio
             }
         }
 
-        public Articulo MapearArticulo (AccesoDatos datos)
+        public Articulo MapearArticulo(AccesoDatos datos)
         {
             Articulo aux = new Articulo();
 

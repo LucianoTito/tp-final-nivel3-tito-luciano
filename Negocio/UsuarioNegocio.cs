@@ -44,10 +44,9 @@ namespace Negocio
 
                 return false;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-
-                throw ex;
+                throw;
             }
             finally
             {
@@ -70,10 +69,31 @@ namespace Negocio
 
                 datos.EjecutarAccion();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
+                throw;
+            }
+            finally
+            {
+                datos.CerrarConexion();
+            }
+        }
 
-                throw ex;
+        //Chequea si ya existe un usuario registrado con ese email (para no permitir duplicados).
+        public bool ExisteEmail(string email)
+        {
+            AccesoDatos datos = new AccesoDatos();
+            try
+            {
+                datos.SetearConsulta("SELECT Id FROM USERS WHERE email = @email");
+                datos.SetearParametro("@email", email);
+                datos.EjecutarLectura();
+
+                return datos.Lector.Read(); // true si el email ya está en uso
+            }
+            catch (Exception)
+            {
+                throw;
             }
             finally
             {
@@ -93,9 +113,9 @@ namespace Negocio
                 //ejecuto la acción y capturo el ID que devuelve la base de datos
                 return datos.EjecutarAccionScalar();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                throw ex;
+                throw;
             }
             finally
             {

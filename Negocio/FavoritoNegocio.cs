@@ -9,8 +9,36 @@ namespace Negocio
 {
     public class FavoritoNegocio
     {
+        //Chequea si un artículo ya está en la lista de favoritos de un usuario.
+        public bool Existe(int idUsuario, int idArticulo)
+        {
+            AccesoDatos datos = new AccesoDatos();
+            try
+            {
+                datos.SetearConsulta("SELECT Id FROM FAVORITOS WHERE IdUser = @idUser AND IdArticulo = @idArticulo");
+                datos.SetearParametro("@idUser", idUsuario);
+                datos.SetearParametro("@idArticulo", idArticulo);
+                datos.EjecutarLectura();
+
+                return datos.Lector.Read(); // true si ya existe la fila
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+            finally
+            {
+                datos.CerrarConexion();
+            }
+        }
+
         public void InsertarFavorito(int idUsuario, int idArticulo)
         {
+            //Evito duplicados por código: si ya está en favoritos, no vuelvo a insertar.
+            //(No podemos usar una restricción UNIQUE en la DB porque no se puede modificar el esquema.)
+            if (Existe(idUsuario, idArticulo))
+                return;
+
             AccesoDatos datos = new AccesoDatos();
             try
             {
@@ -19,9 +47,9 @@ namespace Negocio
                 datos.SetearParametro("@idArticulo", idArticulo);
                 datos.EjecutarAccion();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                throw ex;
+                throw;
             }
             finally
             {
@@ -39,9 +67,9 @@ namespace Negocio
                 datos.SetearParametro("@idArticulo", idArticulo);
                 datos.EjecutarAccion();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                throw ex;
+                throw;
             }
             finally
             {
@@ -69,19 +97,18 @@ namespace Negocio
                 datos.SetearParametro("@idUser", idUsuario);
                 datos.EjecutarLectura();
 
-                while(datos.Lector.Read())
+                while (datos.Lector.Read())
                 {
 
-                    listaFavoritos.Add(articuloNegocio.MapearArticulo(datos));  
+                    listaFavoritos.Add(articuloNegocio.MapearArticulo(datos));
 
                 }
 
                 return listaFavoritos;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-
-                throw ex;
+                throw;
             }
             finally
             {
@@ -92,4 +119,3 @@ namespace Negocio
         }
     }
 }
-
