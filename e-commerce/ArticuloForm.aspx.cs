@@ -18,7 +18,7 @@ namespace e_commerce
             {
                 Session.Add("error", "Acceso denegado. Se requieren permisos de administrador para operar aquí.");
                 Response.Redirect("Error.aspx", false);
-
+                return; // CORTA la ejecución: sin esto, un no-admin seguía cargando dropdowns y datos igual.
             }
             try
             {
@@ -39,13 +39,21 @@ namespace e_commerce
                     ddlCategoria.DataTextField = "Descripcion";
                     ddlCategoria.DataBind();
 
-                    //Evaluo el modo, si viene con ID es una modificación 
+                    //Evaluo el modo, si viene con ID es una modificación
                     string id = Request.QueryString["id"];
                     if (id != null)
                     {
                         ArticuloNegocio negocio = new ArticuloNegocio();
 
-                        Articulo seleccionado = negocio.Listar().Find(X => X.Id == int.Parse(id));
+                        Articulo seleccionado = negocio.ObtenerPorId(int.Parse(id));
+
+                        //Si el Id no corresponde a ningún artículo, corto acá (antes tiraba NullReference).
+                        if (seleccionado == null)
+                        {
+                            Session.Add("error", "El artículo solicitado no existe o fue eliminado.");
+                            Response.Redirect("Error.aspx", false);
+                            return;
+                        }
 
                         //Precargo los datos en el formulario
                         txtCodigo.Text = seleccionado.Codigo;
@@ -58,7 +66,7 @@ namespace e_commerce
                         ddlMarca.SelectedValue = seleccionado.Marca.Id.ToString();
                         ddlCategoria.SelectedValue = seleccionado.Categoria.Id.ToString();
 
-                        //Fordar que la imagen se dibuje disparando el evento manualmente
+                        //Forzar que la imagen se dibuje disparando el evento manualmente
                         txtImagenUrl_TextChanged(sender, e);
 
                         btnEliminar.Visible = true;
@@ -70,27 +78,29 @@ namespace e_commerce
             catch (Exception ex)
             {
 
-                Session.Add("error", "Error al cargar el formulario: "+ ex.Message);
-                Response.Redirect("Error.aspx", false );
+             
+                System.Diagnostics.Debug.WriteLine(ex.ToString());
+                Session.Add("error", "No se pudo cargar el formulario del artículo. Intentá nuevamente.");
+                Response.Redirect("Error.aspx", false);
             }
         }
 
         protected void txtImagenUrl_TextChanged(object sender, EventArgs e)
         {
-            imgArticulo.ImageUrl = txtImagenUrl.Text;   
+            imgArticulo.ImageUrl = txtImagenUrl.Text;
         }
 
         protected void btnAceptar_Click(object sender, EventArgs e)
         {
             try
             {
-                if (txtImagenUrl.Text.Length > 500)
+                if (txtImagenUrl.Text.Length > 1000)
                 {
                     ScriptManager.RegisterStartupScript(this, this.GetType(), "alertaUrl", "alert('⚠️ La URL de la imagen es demasiado larga. Ingrese un enlace que no supere los 1000 caracteres.');", true);
                     return;
                 }
 
-                
+
                 if (string.IsNullOrEmpty(txtCodigo.Text) || string.IsNullOrEmpty(txtNombre.Text) || string.IsNullOrEmpty(txtPrecio.Text))
                 {
                     ScriptManager.RegisterStartupScript(this, this.GetType(), "alertaVacios", "alert('⚠️ Los campos Código, Nombre y Precio son estrictamente obligatorios.');", true);
@@ -134,7 +144,7 @@ namespace e_commerce
 
                 ArticuloNegocio negocio = new ArticuloNegocio();
 
-                // validar código duplicado 
+                // validar código duplicado
                 List<Articulo> listaActual = negocio.Listar();
                 bool codigoExiste = false;
                 string codigoIngresado = txtCodigo.Text.Trim().ToUpper();
@@ -153,7 +163,7 @@ namespace e_commerce
 
                 if (codigoExiste)
                 {
-                    
+
                     string scriptAviso = "alert('⛔ El Código de Artículo \\'" + txtCodigo.Text + "\\' ya se encuentra registrado. Por favor, ingrese un código único.');";
                     scriptAviso += "document.getElementById('txtCodigo').classList.add('is-invalid');";
 
@@ -180,7 +190,7 @@ namespace e_commerce
                 nuevo.Categoria = new Categoria();
                 nuevo.Categoria.Id = int.Parse(ddlCategoria.SelectedValue);
 
-               //guardo o actualizo?
+                //guardo o actualizo?
                 if (Request.QueryString["id"] != null)
                 {
                     nuevo.Id = int.Parse(Request.QueryString["id"]);
@@ -195,31 +205,33 @@ namespace e_commerce
             }
             catch (Exception ex)
             {
-                Session.Add("error", "Error al intentar guardar el artículo: " + ex.Message);
+                System.Diagnostics.Debug.WriteLine(ex.ToString());
+                Session.Add("error", "No se pudo guardar el artículo. Revisá los datos e intentá nuevamente.");
                 Response.Redirect("Error.aspx", false);
             }
         }
 
-        protected void btnEliminar_Click (object sender, EventArgs e)
+        protected void btnEliminar_Click(object sender, EventArgs e)
         {
             try
-            {  
+            {
                 //eliminación física
-                if(Request.QueryString["id"] != null)
+                if (Request.QueryString["id"] != null)
                 {
                     int id = int.Parse(Request.QueryString["id"]);
-                    ArticuloNegocio negocio = new ArticuloNegocio();    
+                    ArticuloNegocio negocio = new ArticuloNegocio();
                     negocio.Eliminar(id);
 
-                    Response.Redirect("ArticulosLista.aspx",false);
+                    Response.Redirect("ArticulosLista.aspx", false);
                 }
 
             }
             catch (Exception ex)
             {
 
-                Session.Add("error", "Error al intentar eliminar el artículo: "+ ex.Message);
-                Response.Redirect("Error.aspx", false ) ;
+                System.Diagnostics.Debug.WriteLine(ex.ToString());
+                Session.Add("error", "No se pudo eliminar el artículo. Intentá nuevamente.");
+                Response.Redirect("Error.aspx", false);
             }
         }
     }
