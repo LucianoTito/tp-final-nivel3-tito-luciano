@@ -18,7 +18,7 @@ namespace e_commerce
             {
                 if (!Seguridad.sesionActiva(Session["usuario"]))
                 {
-                    Response.Redirect("Login.aspx", false); 
+                    Response.Redirect("Login.aspx", false);
                     return;
                 }
 
@@ -29,9 +29,10 @@ namespace e_commerce
             }
             catch (Exception ex)
             {
-
-                Session.Add("error", "Error al cargar tus favoritos: "+ ex.Message);
-                Response.Redirect("Error.aspx", false); 
+                //detalle técnico solo para diagnóstico; al usuario mensaje genérico
+                System.Diagnostics.Debug.WriteLine(ex.ToString());
+                Session.Add("error", "No se pudieron cargar tus favoritos. Intentá nuevamente.");
+                Response.Redirect("Error.aspx", false);
             }
 
         }

@@ -5,7 +5,7 @@ using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using Dominio;
-using Negocio;  
+using Negocio;
 
 namespace e_commerce
 {
@@ -37,23 +37,32 @@ namespace e_commerce
                 user.Email = txtEmail.Text;
                 user.Pass = txtPass.Text;
 
+                //Antes de insertar, verifico que el email no esté ya registrado (evita usuarios duplicados).
+                if (negocio.ExisteEmail(user.Email))
+                {
+                    Session.Add("error", "Ya existe una cuenta registrada con ese correo electrónico. Probá iniciando sesión.");
+                    Response.Redirect("Error.aspx", false);
+                    return;
+                }
+
                 user.Id = negocio.InsertarNuevo(user);
 
                 //como el usuario se acaba de registrar, lo logueamos automaticamente
                 Session.Add("usuario", user);
 
-                Response.Redirect("Default.aspx", false);   
+                Response.Redirect("Default.aspx", false);
             }
             catch (Exception ex)
             {
 
-                Session.Add("error", "Ocurrió un error al intentar registrar el usuario. Por favor, intente de nuevo más tarde." + ex.Message);
+                System.Diagnostics.Debug.WriteLine(ex.ToString());
+                Session.Add("error", "Ocurrió un error al intentar registrar el usuario. Por favor, intente de nuevo más tarde.");
                 Response.Redirect("Error.aspx", false);
             }
-        } 
-    
-    
-    
+        }
+
+
+
     }
-    
+
 }

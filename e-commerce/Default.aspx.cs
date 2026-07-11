@@ -11,22 +11,22 @@ namespace e_commerce
 {
     public partial class Default : System.Web.UI.Page
     {
-        
+
         // si por algun error la carga falla, la lista está vacía, pero no es null, el foreach no explota
         public List<Articulo> ListaArticulos { get; set; } = new List<Articulo>();
 
-      
+
         public List<int> ListaFavoritosUsuario { get; set; }
 
         protected void Page_Load(object sender, EventArgs e)
         {
-    
+
             if (Seguridad.sesionActiva(Session["usuario"]))
             {
                 Usuario user = (Usuario)Session["usuario"];
                 FavoritoNegocio favoritoNegocio = new FavoritoNegocio();
 
-           
+
                 if (Request.QueryString["idAdd"] != null)
                 {
                     try
@@ -36,7 +36,7 @@ namespace e_commerce
 
                         Session.Add("mensajeFav", "❤️ ¡Se ha agregado a tus favoritos!");
 
-                       
+
                         Response.Redirect("Default.aspx", true);
                     }
                     catch (System.Threading.ThreadAbortException)
@@ -46,12 +46,14 @@ namespace e_commerce
                     }
                     catch (Exception ex)
                     {
-                        Session.Add("error", "Error SQL al guardar favorito: " + ex.Message);
+                        //detalle técnico solo para diagnóstico; al usuario mensaje genérico
+                        System.Diagnostics.Debug.WriteLine(ex.ToString());
+                        Session.Add("error", "No se pudo agregar el artículo a favoritos. Intentá nuevamente.");
                         Response.Redirect("Error.aspx", false);
                     }
                 }
 
-               
+
                 if (Request.QueryString["idRm"] != null)
                 {
                     try
@@ -64,37 +66,38 @@ namespace e_commerce
                     }
                     catch (System.Threading.ThreadAbortException)
                     {
-                       
+
                     }
                     catch (Exception ex)
                     {
-                        Session.Add("error", "Error SQL al quitar favorito: " + ex.Message);
+                        System.Diagnostics.Debug.WriteLine(ex.ToString());
+                        Session.Add("error", "No se pudo quitar el artículo de favoritos. Intentá nuevamente.");
                         Response.Redirect("Error.aspx", false);
                     }
                 }
 
-               
+
                 ListaFavoritosUsuario = favoritoNegocio.ListarFavoritos(user.Id).Select(a => a.Id).ToList();
             }
 
 
             // carga del catálogo de artículos
-            
+
             try
             {
-               
+
                 if (!IsPostBack)
                 {
-                   
+
                     ArticuloNegocio negocio = new ArticuloNegocio();
                     ListaArticulos = negocio.Listar();
 
-                    
+
                     Session.Add("listaArticulos", ListaArticulos);
                 }
                 else
                 {
-                    
+
                     if (Session["listaArticulos"] != null)
                     {
                         ListaArticulos = (List<Articulo>)Session["listaArticulos"];
@@ -103,14 +106,15 @@ namespace e_commerce
             }
             catch (Exception ex)
             {
-                Session.Add("error", "Error al cargar el catálogo de artículos: " + ex.Message);
+                System.Diagnostics.Debug.WriteLine(ex.ToString());
+                Session.Add("error", "No se pudo cargar el catálogo de artículos. Intentá nuevamente.");
                 Response.Redirect("Error.aspx", false);
             }
         }
 
         protected void btnBuscar_Click(object sender, EventArgs e)
         {
-            
+
             string filtro = txtFiltro.Text.ToUpper();
 
             List<Articulo> listaFiltrada = ListaArticulos.FindAll(x =>
@@ -125,7 +129,7 @@ namespace e_commerce
         protected void btnLimpiar_Click(object sender, EventArgs e)
         {
             txtFiltro.Text = "";
-           
+
             if (Session["listaArticulos"] != null)
             {
                 ListaArticulos = (List<Articulo>)Session["listaArticulos"];
