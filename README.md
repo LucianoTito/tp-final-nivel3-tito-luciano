@@ -10,12 +10,13 @@ Desarrollado aplicando una **Arquitectura en 3 Capas** estricta y buenas prácti
 
 ## 🔐 Accesos de Prueba
 
-Para probar la funcionalidad completa sin necesidad de registrarse (el login es por email):
+Para probar la aplicación sin necesidad de registrarse (el login es por email):
 
 | Rol | Email | Contraseña |
 |---|---|---|
-| Administrador (acceso total al CRUD) | `admin@admin.com` | `admin` |
-| Cliente (catálogo y favoritos) | `test@test.com` | `test` |
+| Cliente (catálogo, favoritos y perfil) | `test@test.com` | `test` |
+
+El panel de administración (alta, modificación, baja y filtros de artículos) se puede ver en el GIF de arriba. Si querés probarlo en vivo, escribime por [LinkedIn](https://www.linkedin.com/in/luciano-facundo-tito-cedrón) y te paso un acceso de administrador.
 
 ## ✨ Características y Logros Técnicos
 
@@ -50,4 +51,4 @@ Para probar la funcionalidad completa sin necesidad de registrarse (el login es 
 
 ## 👤 Sobre el Autor
 
-**Luciano Tito Cedrón.** Estudiante de la Tecnicatura Universitaria en Programación (UTN-FRGP) y desarrollador en formación constante. Actualmente orientando mi carrera hacia la Ingeniería de Datos en el ecosistema de Microsoft Azure.
+**Luciano Facundo Tito Cedrón.** Estudiante de la Tecnicatura Universitaria en Programación (UTN-FRGP) y desarrollador en formación constante. Actualmente orientando mi carrera hacia la Ingeniería de Datos en el ecosistema de Microsoft Azure.
