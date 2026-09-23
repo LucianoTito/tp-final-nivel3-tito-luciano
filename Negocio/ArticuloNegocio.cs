@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,6 +11,21 @@ namespace Negocio
 {
     public class ArticuloNegocio
     {
+        //Convierte el texto de un precio a decimal, aceptando coma o punto como separador decimal.
+        //Uso InvariantCulture para que el resultado no dependa del idioma del servidor: con la cultura
+        //en español "10.5" se leería como 105 (el punto es separador de miles), y en inglés al revés con la coma.
+        public static bool TryParsePrecio(string texto, out decimal precio)
+        {
+            precio = 0;
+
+            if (string.IsNullOrWhiteSpace(texto))
+                return false;
+
+            string normalizado = texto.Trim().Replace(',', '.');
+
+            return decimal.TryParse(normalizado, NumberStyles.AllowLeadingSign | NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out precio);
+        }
+
 
         public List<Articulo> Listar()
         {
@@ -88,7 +104,7 @@ namespace Negocio
                 if (campo == "Precio")
                 {
                     // El precio debe ser numérico. Si no lo es, corto acá (evita romper la consulta y cualquier intento de inyección).
-                    if (!decimal.TryParse(filtro, out decimal precio))
+                    if (!TryParsePrecio(filtro, out decimal precio))
                         throw new ArgumentException("El valor del filtro de precio no es un número válido.");
 
                     // El operador sale de una whitelist, NO de lo que escriba el usuario.

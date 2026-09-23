@@ -13,9 +13,18 @@ namespace e_commerce
     public partial class ArticulosLista : System.Web.UI.Page
     {
         public bool FiltroAvanzado { get; set; }
+
+        //Límite del tipo money de SQL Server (columna Precio). Un número más grande hace fallar la consulta.
+        private const decimal PrecioMaximo = 922337203685477m;
+
         protected void Page_Load(object sender, EventArgs e)
         {
             FiltroAvanzado = chkAvanzado.Checked;
+
+            //Limpio el error del filtro en cada request: CssClass y Text se guardan en el ViewState,
+            //así que si no los reseteo, el rojo quedaría pegado en el próximo postback.
+            txtFiltroAvanzado.CssClass = "form-control";
+            lblErrorFiltro.Text = "";
 
             chkAvanzado.InputAttributes.Add("class", "form-check-input border-secondary");
 
@@ -124,8 +133,19 @@ namespace e_commerce
                 //Guarda defensiva: si no hay campo o criterio seleccionado, aviso y salgo (evita NullReference).
                 if (ddlCampo.SelectedItem == null || ddlCriterio.SelectedItem == null)
                 {
-                    Session.Add("error", "Seleccioná un campo y un criterio antes de ejecutar la búsqueda.");
-                    Response.Redirect("Error.aspx", false);
+                    MostrarErrorFiltro("Seleccioná un campo y un criterio antes de ejecutar la búsqueda.");
+                    return;
+                }
+
+                string campo = ddlCampo.SelectedItem.ToString();
+                string filtro = txtFiltroAvanzado.Text.Trim();
+
+                //Valido también en el servidor: la validación JS se puede saltear (JS desactivado, request armado a mano).
+                string error = ValidarFiltroAvanzado(campo, filtro);
+                if (error != null)
+                {
+                    //Muestro el mensaje en la página y NO ejecuto la búsqueda (la grilla queda como estaba).
+                    MostrarErrorFiltro(error);
                     return;
                 }
 
@@ -133,10 +153,9 @@ namespace e_commerce
 
                 //llamo a la bd pasandole los 3 parámetros
                 dgvArticulos.DataSource = negocio.Filtrar(
-
-                    ddlCampo.SelectedItem.ToString(),
+                    campo,
                     ddlCriterio.SelectedItem.ToString(),
-                    txtFiltroAvanzado.Text
+                    filtro
                     );
 
                 dgvArticulos.DataBind();
@@ -148,6 +167,40 @@ namespace e_commerce
                 Session.Add("error", "No se pudo ejecutar el filtro avanzado. Intentá nuevamente.");
                 Response.Redirect("Error.aspx", false);
             }
+        }
+
+        //Mismas reglas que obtenerErrorFiltro en el JS de ArticulosLista.aspx. Devuelve el mensaje de error o null.
+        private string ValidarFiltroAvanzado(string campo, string filtro)
+        {
+            if (filtro == "")
+            {
+                return "Ingresá un valor para buscar.";
+            }
+
+            if (campo == "Precio")
+            {
+                if (!ArticuloNegocio.TryParsePrecio(filtro, out decimal precio))
+                {
+                    return "El precio tiene que ser un número (podés usar coma o punto para los decimales).";
+                }
+                if (precio < 0)
+                {
+                    return "El precio no puede ser negativo.";
+                }
+                if (precio > PrecioMaximo)
+                {
+                    return "El precio ingresado es demasiado grande.";
+                }
+            }
+
+            return null;
+        }
+
+        //Pinta el TextBox de rojo (is-invalid) y muestra el mensaje debajo (invalid-feedback).
+        private void MostrarErrorFiltro(string mensaje)
+        {
+            txtFiltroAvanzado.CssClass = "form-control is-invalid";
+            lblErrorFiltro.Text = mensaje;
         }
 
         protected void btnLimpiar_Click(object sender, EventArgs e)
