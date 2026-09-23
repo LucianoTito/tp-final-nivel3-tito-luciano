@@ -73,3 +73,4 @@ Dependencias en un solo sentido: `e-commerce` → `Negocio` → `Dominio`.
 
 - `ArticuloForm.aspx` y `.aspx.cs` usan `alert()` / `confirm()` nativos (validaciones, código duplicado, eliminar). `MiPerfil.aspx` también usa `alert()`. Van contra la regla 6.
 - `Default.aspx` muestra `Session["mensajeFav"]` con `<%= %>`. Hay que pasarlo a `<%: %>` (regla 4).
+- `Error.aspx` muestra `ex.ToString()` al usuario (stack trace, rutas y detalles internos). Lo correcto sería mostrar un mensaje amigable y dejar el detalle técnico solo para depuración.
