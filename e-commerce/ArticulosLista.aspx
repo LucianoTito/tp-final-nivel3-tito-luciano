@@ -82,6 +82,13 @@
             <% } %>
       
 
+            <%-- resultado de eliminar (éxito o error). Está DENTRO del UpdatePanel para que se actualice
+                 con el postback parcial. El texto lo pone el servidor, codificado. --%>
+            <div id="alertaResultado" runat="server" visible="false" role="alert">
+                <asp:Label ID="lblResultado" runat="server" />
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+            </div>
+
             <%-- grilla de datos  --%>
             <div class="table-responsive shadow-sm rounded">
                 <asp:GridView ID="dgvArticulos" runat="server" CssClass="table table-striped table-hover table-bordered mb-0 align-middle" 
@@ -101,15 +108,61 @@
                         <asp:BoundField HeaderText="Categoría" DataField="Categoria.Descripcion" />
                         <asp:BoundField HeaderText="Precio" DataField="Precio" DataFormatString="{0:C2}" />
                         
-                        <asp:CommandField HeaderText="Acción" ShowSelectButton="true" SelectText="✍️ Editar" ControlStyle-CssClass="btn btn-sm btn-outline-primary" />
+                        <asp:TemplateField HeaderText="Acciones">
+                            <ItemTemplate>
+                                <div class="d-flex gap-2">
+                                    <%-- CommandName="Select": dispara dgvArticulos_SelectedIndexChanged, igual que el CommandField de antes --%>
+                                    <asp:LinkButton runat="server" CommandName="Select" Text="✍️ Editar" CssClass="btn btn-sm btn-outline-primary" />
+
+                                    <%-- botón HTML común (no hace postback): solo abre el modal. data-id y data-nombre le pasan
+                                         los datos al modal; <%#: %> los codifica igual que <%: %> --%>
+                                    <button type="button" class="btn btn-sm btn-outline-danger"
+                                        data-bs-toggle="modal" data-bs-target="#modalEliminar"
+                                        data-id="<%#: Eval("Id") %>" data-nombre="<%#: Eval("Nombre") %>">
+                                        🗑️ Eliminar
+                                    </button>
+                                </div>
+                            </ItemTemplate>
+                        </asp:TemplateField>
                     </Columns>
                 </asp:GridView>
             </div>
 
         </ContentTemplate>
+        <Triggers>
+            <%-- el botón del modal está FUERA del UpdatePanel: sin este trigger haría un postback completo --%>
+            <asp:AsyncPostBackTrigger ControlID="btnConfirmarEliminar" EventName="Click" />
+        </Triggers>
     </asp:UpdatePanel>
         </div>
     </div>
+
+    <%-- MODAL DE CONFIRMACIÓN (uno solo, reutilizable para todas las filas).
+         Está FUERA del UpdatePanel a propósito: así el postback parcial nunca lo reemplaza mientras está abierto
+         (eso es lo que deja el fondo oscuro trabado). --%>
+    <div class="modal fade" id="modalEliminar" tabindex="-1" aria-labelledby="modalEliminarTitulo" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalEliminarTitulo">Eliminar artículo</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    ¿Eliminar '<strong id="modalEliminarNombre"></strong>'? Esta acción no se puede deshacer.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <%-- primero cierro el modal con JS (Bootstrap saca el fondo oscuro) y después sigue el postback parcial --%>
+                    <asp:Button ID="btnConfirmarEliminar" runat="server" Text="🗑️ Eliminar" CssClass="btn btn-danger"
+                        OnClick="btnConfirmarEliminar_Click" OnClientClick="cerrarModalEliminar();" />
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <%-- Id del artículo a eliminar: lo completa el JS al abrir el modal. Viaja desde el navegador,
+         así que el servidor NO confía en él (verifica que sea admin, que sea un número y que exista). --%>
+    <asp:HiddenField ID="hfIdEliminar" runat="server" />
 
     <div class="row">
         <div class="col">
@@ -187,5 +240,27 @@
                 e.target.classList.remove("is-invalid");
             }
         });
+
+        // ----- Modal de eliminar -----
+        // Los botones "Eliminar" de la grilla abren el modal con data-bs-toggle="modal". Bootstrap atiende esos
+        // clicks con un único listener en document, así que funciona también con los botones nuevos que
+        // el UpdatePanel crea en cada postback parcial.
+        var modalEliminar = document.getElementById("modalEliminar");
+
+        // "show.bs.modal" se dispara justo antes de abrirse. event.relatedTarget es el botón que lo abrió:
+        // de ahí leo el id y el nombre de ESA fila.
+        modalEliminar.addEventListener("show.bs.modal", function (event) {
+            var boton = event.relatedTarget;
+
+            // textContent (nunca innerHTML): el nombre se muestra como texto, aunque tenga algo como <script>
+            document.getElementById("modalEliminarNombre").textContent = boton.getAttribute("data-nombre");
+            document.getElementById("<%= hfIdEliminar.ClientID %>").value = boton.getAttribute("data-id");
+        });
+
+        // Se ejecuta al confirmar, justo antes del postback parcial. Cierro el modal con la API de Bootstrap
+        // para que él mismo saque el fondo oscuro y la clase modal-open del body.
+        function cerrarModalEliminar() {
+            bootstrap.Modal.getOrCreateInstance(modalEliminar).hide();
+        }
     </script>
 </asp:Content>

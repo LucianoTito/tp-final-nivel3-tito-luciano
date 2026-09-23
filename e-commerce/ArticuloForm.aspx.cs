@@ -76,9 +76,6 @@ namespace e_commerce
 
                         //Forzar que la imagen se dibuje disparando el evento manualmente
                         txtImagenUrl_TextChanged(sender, e);
-
-                        btnEliminar.Visible = true;
-
                     }
                 }
 
@@ -274,30 +271,6 @@ namespace e_commerce
                 lbl.Text = "";
             }
             alertaErrores.Attributes["class"] = "alert alert-danger d-none";
-        }
-
-        protected void btnEliminar_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                //eliminación física
-                if (Request.QueryString["id"] != null)
-                {
-                    int id = int.Parse(Request.QueryString["id"]);
-                    ArticuloNegocio negocio = new ArticuloNegocio();
-                    negocio.Eliminar(id);
-
-                    Response.Redirect("ArticulosLista.aspx", false);
-                }
-
-            }
-            catch (Exception ex)
-            {
-
-                System.Diagnostics.Debug.WriteLine(ex.ToString());
-                Session.Add("error", "No se pudo eliminar el artículo. Intentá nuevamente.");
-                Response.Redirect("Error.aspx", false);
-            }
         }
     }
 }

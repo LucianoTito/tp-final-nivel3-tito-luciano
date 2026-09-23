@@ -66,7 +66,6 @@
                 <div class="mt-4 mb-5">
                     <asp:Button ID="btnAceptar" runat="server" Text="💾 Guardar Artículo" CssClass="btn btn-primary me-2" OnClick="btnAceptar_Click" OnClientClick="return validar();" />
                     <a href="ArticulosLista.aspx" class="btn btn-outline-secondary me-2">Cancelar</a>
-                   <asp:Button ID="btnEliminar" runat="server" Text="🗑️ Eliminar Físicamente" CssClass="btn btn-danger" OnClick="btnEliminar_Click" OnClientClick="return confirm('¿Está seguro que desea eliminar de forma permanente este artículo?');" Visible="false" />
                 </div>
             </asp:Panel>
 

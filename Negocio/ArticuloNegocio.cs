@@ -170,20 +170,33 @@ namespace Negocio
         }
 
 
+        //Elimina el artículo y sus favoritos dentro de una transacción: si falla cualquiera de los dos DELETE,
+        //no se aplica ninguno (no quedan favoritos huérfanos ni un artículo borrado a medias).
+        //FAVORITOS no tiene foreign key hacia ARTICULOS, así que la base no lo controla sola: lo hacemos acá.
         public void Eliminar(int id)
         {
             AccesoDatos datos = new AccesoDatos();
             try
             {
-                datos.SetearConsulta("DELETE FROM ARTICULOS WHERE Id = @Id");
+                datos.IniciarTransaccion();
+
+                //El mismo parámetro @Id sirve para las dos consultas (se ejecutan con el mismo comando).
                 datos.SetearParametro("@Id", id);
+
+                //1) primero los favoritos que apuntan al artículo
+                datos.SetearConsulta("DELETE FROM FAVORITOS WHERE IdArticulo = @Id");
                 datos.EjecutarAccion();
 
-            }
-            catch (Exception ex)
-            {
+                //2) después el artículo
+                datos.SetearConsulta("DELETE FROM ARTICULOS WHERE Id = @Id");
+                datos.EjecutarAccion();
 
-                throw ex;
+                datos.ConfirmarTransaccion();
+            }
+            catch (Exception)
+            {
+                datos.CancelarTransaccion();
+                throw;
             }
             finally
             {

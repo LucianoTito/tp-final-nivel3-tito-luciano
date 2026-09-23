@@ -22,6 +22,7 @@ namespace e_commerce
             //así que si no los reseteo, el rojo quedaría pegado en el próximo postback.
             txtFiltroAvanzado.CssClass = "form-control";
             lblErrorFiltro.Text = "";
+            alertaResultado.Visible = false;
 
             chkAvanzado.InputAttributes.Add("class", "form-check-input border-secondary");
 
@@ -198,6 +199,80 @@ namespace e_commerce
         {
             txtFiltroAvanzado.CssClass = "form-control is-invalid";
             lblErrorFiltro.Text = mensaje;
+        }
+
+        protected void btnConfirmarEliminar_Click(object sender, EventArgs e)
+        {
+            //Vuelvo a verificar que sea admin ACÁ, no alcanza con el Page_Load: Response.Redirect(..., false)
+            //no corta el ciclo de vida, así que este evento se ejecutaría igual para un usuario no admin.
+            if (!Seguridad.esAdmin(Session["usuario"]))
+            {
+                Session.Add("error", "Acceso denegado. Se requieren permisos de administrador para operar en esta sección.");
+                Response.Redirect("Error.aspx", false);
+                return;
+            }
+
+            //El Id viene del campo oculto, que se puede manipular desde el navegador: primero, que sea un número.
+            if (!int.TryParse(hfIdEliminar.Value, out int id))
+            {
+                MostrarResultado("alert-danger", "No se pudo identificar el artículo a eliminar.");
+                return;
+            }
+
+            try
+            {
+                ArticuloNegocio negocio = new ArticuloNegocio();
+
+                //Busco el artículo en la base: confirma que existe y me da el nombre real
+                //(no uso el nombre que mostró el modal, porque también viene del navegador).
+                Articulo articulo = negocio.ObtenerPorId(id);
+
+                if (articulo == null)
+                {
+                    MostrarResultado("alert-warning", "El artículo ya no existe (puede que se haya eliminado antes).");
+                }
+                else
+                {
+                    negocio.Eliminar(id);
+                    MostrarResultado("alert-success", "Se eliminó el artículo \"" + articulo.Nombre + "\".");
+                }
+
+                ActualizarListaYGrilla();
+            }
+            catch (Exception ex)
+            {
+                //Gracias a la transacción, si algo falló no se borró nada: lo aviso en la página.
+                System.Diagnostics.Debug.WriteLine(ex.ToString());
+                MostrarResultado("alert-danger", "No se pudo eliminar el artículo. No se modificó nada; intentá nuevamente.");
+            }
+        }
+
+        //Recarga la lista de la base (Session["listaArticulos"] la usa el filtro rápido) y vuelve a llenar
+        //la grilla con los artículos que ya estaba mostrando, para respetar el filtro que el admin tenga aplicado.
+        private void ActualizarListaYGrilla()
+        {
+            //Ids de las filas visibles ahora (salen de DataKeyNames="Id")
+            List<int> idsVisibles = new List<int>();
+            foreach (DataKey clave in dgvArticulos.DataKeys)
+            {
+                idsVisibles.Add((int)clave.Value);
+            }
+
+            List<Articulo> articulos = new ArticuloNegocio().Listar();
+            Session["listaArticulos"] = articulos;
+
+            //El artículo eliminado ya no está en "articulos", así que desaparece de la grilla.
+            dgvArticulos.DataSource = articulos.FindAll(x => idsVisibles.Contains(x.Id));
+            dgvArticulos.DataBind();
+        }
+
+        //Muestra el alert de Bootstrap arriba de la grilla. tipo: alert-success, alert-warning o alert-danger.
+        private void MostrarResultado(string tipo, string mensaje)
+        {
+            alertaResultado.Attributes["class"] = "alert " + tipo + " alert-dismissible fade show";
+            //El Label escribe el Text tal cual en el HTML: lo codifico (el mensaje puede incluir el nombre del artículo).
+            lblResultado.Text = HttpUtility.HtmlEncode(mensaje);
+            alertaResultado.Visible = true;
         }
 
         protected void btnLimpiar_Click(object sender, EventArgs e)

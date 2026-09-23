@@ -57,12 +57,12 @@ Dependencias en un solo sentido: `e-commerce` → `Negocio` → `Dominio`.
 - `Login.aspx` / `Registro.aspx`: login por email y alta de usuario.
 - `MiPerfil.aspx`: edición de nombre, apellido e imagen de perfil (se guarda en `Images/Perfiles/`). Requiere sesión.
 - `Favoritos.aspx`: favoritos del usuario logueado.
-- `ArticulosLista.aspx`: (admin) GridView de artículos con filtro avanzado.
-- `ArticuloForm.aspx`: (admin) alta, modificación y baja de un artículo (`?id=` para editar).
+- `ArticulosLista.aspx`: (admin) GridView de artículos con filtro avanzado, y eliminación desde la grilla con un modal de Bootstrap.
+- `ArticuloForm.aspx`: (admin) alta y modificación de un artículo (`?id=` para editar).
 - `Error.aspx`: muestra el mensaje amigable guardado en `Session["error"]` (o uno genérico si no hay).
 
 **Clases de Negocio (`Negocio/`)**
-- `AccesoDatos`: conexión, comando y lector de ADO.NET; lee `conexionDB` desde la configuración.
+- `AccesoDatos`: conexión, comando y lector de ADO.NET; lee `conexionDB` desde la configuración. Soporta transacciones (`IniciarTransaccion`, `ConfirmarTransaccion`, `CancelarTransaccion`).
 - `ArticuloNegocio`: `Listar`, `ObtenerPorId`, `Filtrar`, `AgregarArticulo`, `ModificarArticulo`, `Eliminar`.
 - `MarcaNegocio` / `CategoriaNegocio`: `listar()` para los desplegables.
 - `UsuarioNegocio`: `Loguear`, `InsertarNuevo`, `ExisteEmail`, `ActualizarPerfil`.
@@ -71,6 +71,6 @@ Dependencias en un solo sentido: `e-commerce` → `Negocio` → `Dominio`.
 
 ## Deuda conocida (candidata a las mejoras de UX)
 
-- `ArticuloForm.aspx` y `.aspx.cs` usan `alert()` / `confirm()` nativos (validaciones, código duplicado, eliminar). `MiPerfil.aspx` también usa `alert()`. Van contra la regla 6.
+- `MiPerfil.aspx` usa `alert()` nativo en la validación de nombre y apellido. Va contra la regla 6.
 - `Default.aspx` muestra `Session["mensajeFav"]` con `<%= %>`. Hay que pasarlo a `<%: %>` (regla 4).
 - `Error.aspx` muestra `ex.ToString()` al usuario (stack trace, rutas y detalles internos). Lo correcto sería mostrar un mensaje amigable y dejar el detalle técnico solo para depuración.

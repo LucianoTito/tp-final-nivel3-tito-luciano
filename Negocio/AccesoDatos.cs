@@ -15,6 +15,7 @@ namespace Negocio
         private SqlConnection conexion;
         private SqlCommand comando;
         private SqlDataReader lector;
+        private SqlTransaction transaccion;
 
         public SqlDataReader Lector
         {
@@ -100,15 +101,51 @@ namespace Negocio
             }
         }
 
+        //Métodos de transacción
+        //Una transacción agrupa varias consultas: o se confirman TODAS (Commit) o no se aplica NINGUNA (Rollback).
+        //Todos los EjecutarAccion/EjecutarLectura que vengan después corren dentro de la transacción.
+
+        public void IniciarTransaccion()
+        {
+            comando.Connection = conexion;
+            if (conexion.State == System.Data.ConnectionState.Closed)
+            {
+                conexion.Open();
+            }
+
+            transaccion = conexion.BeginTransaction();
+            comando.Transaction = transaccion;
+        }
+
+        public void ConfirmarTransaccion()
+        {
+            transaccion.Commit();
+            transaccion = null;
+            comando.Transaction = null;
+        }
+
+        public void CancelarTransaccion()
+        {
+            //Si la conexión se cayó, SQL Server ya deshizo todo y la transacción queda sin conexión:
+            //en ese caso no hay nada para deshacer (y Rollback tiraría otra excepción que taparía la original).
+            if (transaccion != null && transaccion.Connection != null)
+            {
+                transaccion.Rollback();
+            }
+            transaccion = null;
+            comando.Transaction = null;
+        }
+
              public void CerrarConexion()
         {
-           
+
             if (lector != null && !lector.IsClosed)
             {
                 lector.Close();
             }
 
-          
+
+            //Si quedó una transacción abierta (no se confirmó ni se canceló), cerrar la conexión la deshace.
             if (conexion.State == System.Data.ConnectionState.Open)
             {
                 conexion.Close();
