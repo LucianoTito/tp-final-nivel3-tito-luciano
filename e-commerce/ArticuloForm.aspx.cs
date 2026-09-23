@@ -1,6 +1,7 @@
 ﻿using Negocio;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Web;
 using System.Web.UI;
@@ -20,6 +21,11 @@ namespace e_commerce
                 Response.Redirect("Error.aspx", false);
                 return; // CORTA la ejecución: sin esto, un no-admin seguía cargando dropdowns y datos igual.
             }
+
+            //Limpio los errores en cada request: CssClass, Text y los atributos se guardan en el ViewState,
+            //así que si no los reseteo, el rojo quedaría pegado en el próximo postback.
+            LimpiarErrores();
+
             try
             {
                 if (!IsPostBack)
@@ -60,7 +66,9 @@ namespace e_commerce
                         txtNombre.Text = seleccionado.Nombre;
                         txtDescripcion.Text = seleccionado.Descripcion;
                         txtImagenUrl.Text = seleccionado.ImagenUrl;
-                        txtPrecio.Text = seleccionado.Precio.ToString();
+                        //InvariantCulture: siempre con punto decimal, sin importar el idioma del servidor.
+                        //"0.####" muestra hasta 4 decimales (los que guarda el tipo money) sin ceros de más.
+                        txtPrecio.Text = seleccionado.Precio.ToString("0.####", CultureInfo.InvariantCulture);
 
                         //posiciono los desplegables en la opción correcta
                         ddlMarca.SelectedValue = seleccionado.Marca.Id.ToString();
@@ -102,51 +110,26 @@ namespace e_commerce
         {
             try
             {
-                if (txtImagenUrl.Text.Length > 1000)
+                //Trabajo con los valores sin espacios al principio y al final (y así se guardan).
+                string codigo = txtCodigo.Text.Trim();
+                string nombre = txtNombre.Text.Trim();
+                string descripcion = txtDescripcion.Text.Trim();
+                string imagenUrl = txtImagenUrl.Text.Trim();
+
+                //Valido también en el servidor: la validación JS se puede saltear (JS desactivado, request armado a mano).
+                //Evalúo TODOS los campos antes de cortar, para marcar todos los errores de una sola vez.
+                decimal precio;
+                bool codigoOk = MostrarResultado(txtCodigo, lblErrorCodigo, ValidarCodigo(codigo));
+                bool nombreOk = MostrarResultado(txtNombre, lblErrorNombre, ValidarNombre(nombre));
+                bool precioOk = MostrarResultado(txtPrecio, lblErrorPrecio, ValidarPrecio(txtPrecio.Text, out precio));
+                bool descripcionOk = MostrarResultado(txtDescripcion, lblErrorDescripcion,
+                    descripcion.Length > 150 ? "La descripción no puede superar los 150 caracteres." : null);
+                bool imagenOk = MostrarResultado(txtImagenUrl, lblErrorImagenUrl,
+                    imagenUrl.Length > 1000 ? "La URL de la imagen no puede superar los 1000 caracteres." : null);
+
+                if (!(codigoOk && nombreOk && precioOk && descripcionOk && imagenOk))
                 {
-                    ScriptManager.RegisterStartupScript(this, this.GetType(), "alertaUrl", "alert('⚠️ La URL de la imagen es demasiado larga. Ingrese un enlace que no supere los 1000 caracteres.');", true);
-                    return;
-                }
-
-
-                if (string.IsNullOrEmpty(txtCodigo.Text) || string.IsNullOrEmpty(txtNombre.Text) || string.IsNullOrEmpty(txtPrecio.Text))
-                {
-                    ScriptManager.RegisterStartupScript(this, this.GetType(), "alertaVacios", "alert('⚠️ Los campos Código, Nombre y Precio son estrictamente obligatorios.');", true);
-                    return;
-                }
-
-                if (txtCodigo.Text.Length > 50)
-                {
-                    ScriptManager.RegisterStartupScript(this, this.GetType(), "alertaCodigoLargo", "alert('⚠️ El Código no puede superar los 50 caracteres.'); document.getElementById('txtCodigo').classList.add('is-invalid');", true);
-                    return;
-                }
-
-                if (txtNombre.Text.Length > 50)
-                {
-                    ScriptManager.RegisterStartupScript(this, this.GetType(), "alertaNombreLargo", "alert('⚠️ El Nombre no puede superar los 50 caracteres.'); document.getElementById('txtNombre').classList.add('is-invalid');", true);
-                    return;
-                }
-
-                if (txtDescripcion.Text.Length > 150)
-                {
-                    ScriptManager.RegisterStartupScript(this, this.GetType(), "alertaDescLarga", "alert('⚠️ La Descripción es demasiado larga (máximo 150 caracteres).'); document.getElementById('txtDescripcion').classList.add('is-invalid');", true);
-                    return;
-                }
-
-
-                decimal precioValidado;
-                if (!decimal.TryParse(txtPrecio.Text, out precioValidado) || precioValidado < 0)
-                {
-                    string scriptPrecio = "alert('⛔ El precio ingresado no es válido. No puede ser negativo.'); document.getElementById('txtPrecio').classList.add('is-invalid');";
-                    ScriptManager.RegisterStartupScript(this, this.GetType(), "alertaPrecio", scriptPrecio, true);
-                    return;
-                }
-
-                decimal codigoNumerico;
-                if (decimal.TryParse(txtCodigo.Text, out codigoNumerico) && codigoNumerico < 0)
-                {
-                    string scriptCodigoNeg = "alert('⛔ El código de artículo no puede ser un número negativo.'); document.getElementById('txtCodigo').classList.add('is-invalid');";
-                    ScriptManager.RegisterStartupScript(this, this.GetType(), "alertaCodigoNeg", scriptCodigoNeg, true);
+                    MostrarAlertaErrores();
                     return;
                 }
 
@@ -155,7 +138,7 @@ namespace e_commerce
                 // validar código duplicado
                 List<Articulo> listaActual = negocio.Listar();
                 bool codigoExiste = false;
-                string codigoIngresado = txtCodigo.Text.Trim().ToUpper();
+                string codigoIngresado = codigo.ToUpper();
 
                 if (Request.QueryString["id"] != null)
                 {
@@ -171,12 +154,10 @@ namespace e_commerce
 
                 if (codigoExiste)
                 {
-
-                    string scriptAviso = "alert('⛔ El Código de Artículo \\'" + txtCodigo.Text + "\\' ya se encuentra registrado. Por favor, ingrese un código único.');";
-                    scriptAviso += "document.getElementById('txtCodigo').classList.add('is-invalid');";
-
-                    ScriptManager.RegisterStartupScript(this, this.GetType(), "alertaDuplicado", scriptAviso, true);
-
+                    //Antes este mensaje se armaba concatenando el código dentro de un string de JavaScript:
+                    //un código como  ');alert(1);//  ejecutaba JS. Ahora es texto común y MostrarResultado lo codifica.
+                    MostrarResultado(txtCodigo, lblErrorCodigo, "El código \"" + codigo + "\" ya está registrado en otro artículo. Ingresá un código único.");
+                    MostrarAlertaErrores();
                     return;
                 }
 
@@ -185,11 +166,11 @@ namespace e_commerce
                 Articulo nuevo = new Articulo();
 
                 // paso los datos HTML a un objeto
-                nuevo.Codigo = txtCodigo.Text;
-                nuevo.Nombre = txtNombre.Text;
-                nuevo.Descripcion = txtDescripcion.Text;
-                nuevo.ImagenUrl = txtImagenUrl.Text;
-                nuevo.Precio = precioValidado;
+                nuevo.Codigo = codigo;
+                nuevo.Nombre = nombre;
+                nuevo.Descripcion = descripcion;
+                nuevo.ImagenUrl = imagenUrl;
+                nuevo.Precio = precio;
 
                 // instancio objetos internos y asocio IDs de desplegables
                 nuevo.Marca = new Marca();
@@ -217,6 +198,82 @@ namespace e_commerce
                 Session.Add("error", "No se pudo guardar el artículo. Revisá los datos e intentá nuevamente.");
                 Response.Redirect("Error.aspx", false);
             }
+        }
+
+        //----- Reglas de negocio: las mismas que el objeto "reglas" del JS en ArticuloForm.aspx -----
+        //Cada método devuelve el mensaje de error, o null si el valor es válido.
+
+        private string ValidarCodigo(string codigo)
+        {
+            if (codigo == "")
+                return "El código es obligatorio.";
+            if (codigo.Length > 50)
+                return "El código no puede superar los 50 caracteres.";
+            if (ArticuloNegocio.TryParsePrecio(codigo, out decimal numero) && numero < 0)
+                return "El código no puede ser un número negativo.";
+            return null;
+        }
+
+        private string ValidarNombre(string nombre)
+        {
+            if (nombre == "")
+                return "El nombre es obligatorio.";
+            if (nombre.Length < 3)
+                return "El nombre tiene que tener al menos 3 caracteres.";
+            if (nombre.Length > 50)
+                return "El nombre no puede superar los 50 caracteres.";
+            return null;
+        }
+
+        private string ValidarPrecio(string texto, out decimal precio)
+        {
+            if (string.IsNullOrWhiteSpace(texto))
+            {
+                precio = 0;
+                return "El precio es obligatorio.";
+            }
+            //TryParsePrecio: acepta coma o punto y no depende del idioma del servidor (igual que en el filtro).
+            if (!ArticuloNegocio.TryParsePrecio(texto, out precio))
+                return "El precio tiene que ser un número (podés usar coma o punto para los decimales).";
+            if (precio <= 0)
+                return "El precio tiene que ser mayor a 0.";
+            if (precio > ArticuloNegocio.PrecioMaximo)
+                return "El precio ingresado es demasiado grande.";
+            return null;
+        }
+
+        //----- Feedback de Bootstrap desde el servidor -----
+
+        //Si hay error, pinta el TextBox de rojo (is-invalid) y escribe el mensaje en su invalid-feedback.
+        //Devuelve true si el campo es válido.
+        private bool MostrarResultado(TextBox txt, Label lbl, string error)
+        {
+            if (error == null)
+                return true;
+
+            txt.CssClass = "form-control is-invalid";
+            //El Label escribe el Text tal cual en el HTML: codifico acá, en un solo lugar,
+            //por si el mensaje incluye algo que escribió el usuario (ej: el código duplicado).
+            lbl.Text = HttpUtility.HtmlEncode(error);
+            return false;
+        }
+
+        private void MostrarAlertaErrores()
+        {
+            alertaErrores.Attributes["class"] = "alert alert-danger";
+        }
+
+        private void LimpiarErrores()
+        {
+            foreach (TextBox txt in new[] { txtCodigo, txtNombre, txtPrecio, txtDescripcion, txtImagenUrl })
+            {
+                txt.CssClass = "form-control";
+            }
+            foreach (Label lbl in new[] { lblErrorCodigo, lblErrorNombre, lblErrorPrecio, lblErrorDescripcion, lblErrorImagenUrl })
+            {
+                lbl.Text = "";
+            }
+            alertaErrores.Attributes["class"] = "alert alert-danger d-none";
         }
 
         protected void btnEliminar_Click(object sender, EventArgs e)

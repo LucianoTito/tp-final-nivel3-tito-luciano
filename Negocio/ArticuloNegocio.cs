@@ -11,6 +11,9 @@ namespace Negocio
 {
     public class ArticuloNegocio
     {
+        //Límite del tipo money de SQL Server (columna Precio). Un número más grande hace fallar la consulta.
+        public const decimal PrecioMaximo = 922337203685477m;
+
         //Convierte el texto de un precio a decimal, aceptando coma o punto como separador decimal.
         //Uso InvariantCulture para que el resultado no dependa del idioma del servidor: con la cultura
         //en español "10.5" se leería como 105 (el punto es separador de miles), y en inglés al revés con la coma.

@@ -14,9 +14,6 @@ namespace e_commerce
     {
         public bool FiltroAvanzado { get; set; }
 
-        //Límite del tipo money de SQL Server (columna Precio). Un número más grande hace fallar la consulta.
-        private const decimal PrecioMaximo = 922337203685477m;
-
         protected void Page_Load(object sender, EventArgs e)
         {
             FiltroAvanzado = chkAvanzado.Checked;
@@ -187,7 +184,7 @@ namespace e_commerce
                 {
                     return "El precio no puede ser negativo.";
                 }
-                if (precio > PrecioMaximo)
+                if (precio > ArticuloNegocio.PrecioMaximo)
                 {
                     return "El precio ingresado es demasiado grande.";
                 }
