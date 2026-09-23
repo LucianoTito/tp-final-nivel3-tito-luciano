@@ -28,6 +28,12 @@ namespace e_commerce
                     //Traigo solo el artículo pedido (consulta parametrizada), no todo el catálogo.
                     //Si no existe, ObtenerPorId devuelve null y la vista muestra el cartel "no encontrado".
                     ArticuloSeleccionado = negocio.ObtenerPorId(id);
+
+                    //El nombre del artículo va como título de la pestaña (la Master le agrega " | Tienda de Basti").
+                    if (ArticuloSeleccionado != null)
+                    {
+                        Title = ArticuloSeleccionado.Nombre;
+                    }
                 }
 
             }

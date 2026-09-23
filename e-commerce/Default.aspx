@@ -2,8 +2,6 @@
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server"></asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="MainContent" runat="server">
 
-    <h1 class="mb-4">¡Bienvenido a mi Tienda Virtual!</h1>
-
     <%--  BARRA DE BÚSQUEDA --%>
     <div class="row mb-4">
         <div class="col-md-6">

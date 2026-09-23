@@ -12,6 +12,9 @@ namespace e_commerce
 {
     public partial class MasterPage : System.Web.UI.MasterPage
     {
+        //Nombre de la tienda en un solo lugar: lo usan el navbar, el footer y el título de la pestaña.
+        protected const string NombreTienda = "Tienda de Basti";
+
         protected void Page_Load(object sender, EventArgs e)
         {
             if (Seguridad.sesionActiva(Session["usuario"]))
@@ -30,6 +33,21 @@ namespace e_commerce
                 }
             }
 
+        }
+
+        //Armo el título de la pestaña en PreRender: a esta altura ya corrieron el Page_Load de la página
+        //y los eventos de los botones, así que cualquier Title que haya puesto la página ya es el definitivo.
+        protected void Page_PreRender(object sender, EventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(Page.Title))
+            {
+                Page.Title = NombreTienda;
+            }
+            else
+            {
+                //Page.Title se escribe tal cual en el HTML (no se codifica solo), por eso lo codifico acá.
+                Page.Title = HttpUtility.HtmlEncode(Page.Title) + " | " + NombreTienda;
+            }
         }
 
         protected void btnSalir_Click (object sender, EventArgs e)
