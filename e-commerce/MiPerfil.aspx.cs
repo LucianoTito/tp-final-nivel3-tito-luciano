@@ -129,7 +129,12 @@ namespace e_commerce
                 //La Master arma el header en PreRender (después de este click), así que ya los muestra.
                 Session["usuario"] = user;
 
-                imgNuevoPerfil.ImageUrl = "~/Images/Perfiles/" + user.UrlImagenPerfil + "?V=" + DateTime.Now.Ticks.ToString();
+                //Si el usuario no tiene imagen, no toco el ImageUrl: queda la imagen genérica del .aspx.
+                //Sin este if, la URL quedaba "~/Images/Perfiles/?v=..." (una carpeta, no una imagen) y se veía rota.
+                if (!string.IsNullOrEmpty(user.UrlImagenPerfil))
+                {
+                    imgNuevoPerfil.ImageUrl = "~/Images/Perfiles/" + user.UrlImagenPerfil + "?v=" + DateTime.Now.Ticks.ToString();
+                }
 
                 pnlExito.Visible = true;
 
