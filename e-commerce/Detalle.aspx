@@ -8,10 +8,13 @@
 
         <div class="row mt-5">
             
-            <div class="col-md-6 text-center">
-                <img src="<%: ArticuloSeleccionado.ImagenUrl %>" class="img-fluid rounded shadow" alt="<%: ArticuloSeleccionado.Nombre %>" 
-                     onerror="this.src='https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png'" 
-                     style="max-height: 500px; object-fit: contain;" />
+            <%-- mb-4 mb-md-0: en celular la imagen queda arriba del texto, así no se pegan --%>
+            <div class="col-md-6 mb-4 mb-md-0">
+                <%-- onerror: primero se anula a sí mismo (this.onerror=null) para no quedar en bucle si sin-imagen.svg también fallara --%>
+                <div class="articulo-img-detalle shadow">
+                    <img src="<%: ArticuloSeleccionado.ImagenUrl %>" alt="<%: ArticuloSeleccionado.Nombre %>"
+                         onerror="this.onerror=null; this.src='Images/sin-imagen.svg';" />
+                </div>
             </div>
 
            

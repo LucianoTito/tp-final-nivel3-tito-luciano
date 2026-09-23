@@ -165,11 +165,13 @@
   <ItemGroup>
     <Content Include="ArticuloForm.aspx" />
     <Content Include="ArticulosLista.aspx" />
+    <Content Include="Content\estilos.css" />
     <Content Include="Default.aspx" />
     <Content Include="Detalle.aspx" />
     <Content Include="Error.aspx" />
     <Content Include="Favoritos.aspx" />
     <Content Include="Global.asax" />
+    <Content Include="Images\sin-imagen.svg" />
     <Content Include="Login.aspx" />
     <Content Include="MiPerfil.aspx" />
     <Content Include="Registro.aspx" />

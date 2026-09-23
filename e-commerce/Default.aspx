@@ -23,15 +23,17 @@
         <% Session.Remove("mensajeFav"); %>
     <% } %>
 <%--  GRILLA DE TARJETAS --%>
-    <div class="row row-cols-1 row-cols-md-4 g-4 mb-5">
+    <div class="row row-cols-1 row-cols-md-4 g-4">
         
         <% foreach (Dominio.Articulo art in ListaArticulos) { %>
             
             <div class="col">
                 <div class="card h-100 shadow-sm">
-                    <img src="<%: art.ImagenUrl %>" class="card-img-top p-2" alt="<%: art.Nombre %>" 
-                         onerror="this.src='https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png'"
-                         style="max-height: 200px; object-fit: contain;">
+                    <%-- onerror: primero se anula a sí mismo (this.onerror=null) para no quedar en bucle si sin-imagen.svg también fallara --%>
+                    <div class="articulo-img-tarjeta">
+                        <img src="<%: art.ImagenUrl %>" alt="<%: art.Nombre %>"
+                             onerror="this.onerror=null; this.src='Images/sin-imagen.svg';">
+                    </div>
                     
                     <div class="card-body d-flex flex-column">
                         <h5 class="card-title"><%: art.Nombre %></h5>
