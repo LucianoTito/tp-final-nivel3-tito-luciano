@@ -15,13 +15,17 @@ namespace e_commerce
         //Nombre de la tienda en un solo lugar: lo usan el navbar, el footer y el título de la pestaña.
         protected const string NombreTienda = "Tienda de Basti";
 
-        protected void Page_Load(object sender, EventArgs e)
+        //Armo el header y el título en PreRender: a esta altura ya corrieron el Page_Load de la página
+        //y los eventos de los botones (ej: btnGuardar_Click de MiPerfil), así que la sesión y el Title
+        //que haya puesto la página ya son los definitivos.
+        protected void Page_PreRender(object sender, EventArgs e)
         {
             if (Seguridad.sesionActiva(Session["usuario"]))
             {
                 Usuario user = (Usuario)Session["usuario"];
 
-                lblUser.Text = "Hola, " + user.Nombre;
+                //El Label escribe el Text tal cual en el HTML, por eso codifico el nombre (lo carga el usuario).
+                lblUser.Text = "Hola, " + HttpUtility.HtmlEncode(user.Nombre);
 
                 if(!string.IsNullOrEmpty(user.UrlImagenPerfil))
                 {
@@ -33,12 +37,6 @@ namespace e_commerce
                 }
             }
 
-        }
-
-        //Armo el título de la pestaña en PreRender: a esta altura ya corrieron el Page_Load de la página
-        //y los eventos de los botones, así que cualquier Title que haya puesto la página ya es el definitivo.
-        protected void Page_PreRender(object sender, EventArgs e)
-        {
             if (string.IsNullOrWhiteSpace(Page.Title))
             {
                 Page.Title = NombreTienda;

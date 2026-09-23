@@ -67,11 +67,21 @@ namespace e_commerce
                     return;
                 }
 
-                Usuario user = (Usuario)Session["usuario"];
+                Usuario usuarioSesion = (Usuario)Session["usuario"];
                 UsuarioNegocio negocio = new UsuarioNegocio();
 
-                user.Nombre = txtNombre.Text;
-                user.Apellido = txtApellido.Text;
+                //Trabajo sobre una COPIA: si modificara directo el objeto de la sesión y después falla una
+                //validación o la base, el header mostraría datos que nunca se guardaron.
+                Usuario user = new Usuario
+                {
+                    Id = usuarioSesion.Id,
+                    Email = usuarioSesion.Email,
+                    Pass = usuarioSesion.Pass,
+                    Admin = usuarioSesion.Admin,
+                    UrlImagenPerfil = usuarioSesion.UrlImagenPerfil,
+                    Nombre = txtNombre.Text,
+                    Apellido = txtApellido.Text
+                };
 
                 //manejo de la img física
                 //Uso ContentLength > 0 (no el FileName): es la forma confiable de saber si realmente se subió un archivo.
@@ -114,6 +124,10 @@ namespace e_commerce
 
                 //guardo los cambios en la bd
                 negocio.ActualizarPerfil(user);
+
+                //Recién ahora que la base se actualizó bien, la sesión pasa a tener los datos nuevos.
+                //La Master arma el header en PreRender (después de este click), así que ya los muestra.
+                Session["usuario"] = user;
 
                 imgNuevoPerfil.ImageUrl = "~/Images/Perfiles/" + user.UrlImagenPerfil + "?V=" + DateTime.Now.Ticks.ToString();
 
