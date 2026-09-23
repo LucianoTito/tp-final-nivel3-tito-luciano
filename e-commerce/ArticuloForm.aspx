@@ -69,10 +69,13 @@
                             <asp:TextBox ID="txtImagenUrl" runat="server" CssClass="form-control" AutoPostBack="true" OnTextChanged="txtImagenUrl_TextChanged"></asp:TextBox>
                         </div>
                         
-                        <div class="text-center mt-4">
-                            <asp:Image ID="imgArticulo" runat="server" 
-                                ImageUrl="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png" 
-                                CssClass="img-fluid rounded shadow" style="max-height: 400px; object-fit: contain;" />
+                        <%-- mismo marco que en Detalle, así el admin ve la imagen como la va a ver el cliente --%>
+                        <%-- onerror: primero se anula a sí mismo (this.onerror=null) para no quedar en bucle si sin-imagen.svg también fallara --%>
+                        <div class="articulo-img-detalle shadow mt-4">
+                            <asp:Image ID="imgArticulo" runat="server"
+                                ImageUrl="~/Images/sin-imagen.svg"
+                                AlternateText="Vista previa de la imagen del artículo"
+                                onerror="this.onerror=null; this.src='Images/sin-imagen.svg';" />
                         </div>
                     </ContentTemplate>
                 </asp:UpdatePanel>

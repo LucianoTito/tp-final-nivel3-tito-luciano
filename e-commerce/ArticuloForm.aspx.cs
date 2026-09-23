@@ -87,7 +87,15 @@ namespace e_commerce
 
         protected void txtImagenUrl_TextChanged(object sender, EventArgs e)
         {
-            imgArticulo.ImageUrl = txtImagenUrl.Text;
+            //Si el admin borra la URL, vuelvo a la imagen "sin imagen" en vez de dejar un <img> sin src.
+            if (string.IsNullOrWhiteSpace(txtImagenUrl.Text))
+            {
+                imgArticulo.ImageUrl = "~/Images/sin-imagen.svg";
+            }
+            else
+            {
+                imgArticulo.ImageUrl = txtImagenUrl.Text;
+            }
         }
 
         protected void btnAceptar_Click(object sender, EventArgs e)
