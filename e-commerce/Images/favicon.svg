@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- Favicon de Tienda de Basti: carrito ámbar (acento) sobre azul (primario) de la paleta -->
+  <rect width="64" height="64" rx="14" fill="#1d4ed8"/>
+  <path d="M9 15h8l6 25h24l6-19H19" fill="none" stroke="#fbbf24" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M20 23h30l-5 15H24z" fill="#fbbf24"/>
+  <circle cx="27" cy="50" r="4.5" fill="#fbbf24"/>
+  <circle cx="44" cy="50" r="4.5" fill="#fbbf24"/>
+</svg>

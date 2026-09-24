@@ -170,7 +170,9 @@
     <Content Include="Detalle.aspx" />
     <Content Include="Error.aspx" />
     <Content Include="Favoritos.aspx" />
+    <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
+    <Content Include="Images\favicon.svg" />
     <Content Include="Images\sin-imagen.svg" />
     <Content Include="Login.aspx" />
     <Content Include="MiPerfil.aspx" />
