@@ -66,11 +66,11 @@ WHERE Id = 5;
 
 IF NOT EXISTS (SELECT 1 FROM ARTICULOS WHERE Id = 7) PRINT 'Aviso: no existe el artículo con Id 7 (no se actualizó).';
 UPDATE ARTICULOS SET
-    Codigo = N'S71', Nombre = N'Cafetera espresso',
-    Descripcion = N'Cafetera espresso con portafiltro de acero inoxidable para preparar espresso y cappuccino en casa.',
+    Codigo = N'S71', Nombre = N'Parlante Sony ULT Field 5',
+    Descripcion = N'Parlante portátil Bluetooth con modo ULT para graves profundos, protección IP67 contra agua y polvo, y correa para llevarlo al hombro.',
     IdMarca = (SELECT Id FROM MARCAS WHERE Descripcion = N'Sony'),
-    IdCategoria = (SELECT Id FROM CATEGORIAS WHERE Descripcion = N'Media'),
-    ImagenUrl = N'Images/Articulos/cafetera-espresso.jpg', Precio = 459999
+    IdCategoria = (SELECT Id FROM CATEGORIAS WHERE Descripcion = N'Audio'),
+    ImagenUrl = N'Images/Articulos/parlante-sony-ult-field-5.jpg', Precio = 499999
 WHERE Id = 7;
 
 -- 2) Artículos nuevos: se insertan solo si el código no existe

@@ -9,7 +9,7 @@ Todas las fotos son de [Unsplash](https://unsplash.com) y se usan bajo la [Licen
 | `playstation-4.jpg` | Sony PlayStation 4 | [Nikita Kachanovsky](https://unsplash.com/@nkachanovskyyy) | https://unsplash.com/photos/mwytIca3qNA |
 | `televisor-sony-bravia.jpg` | Smart TV Sony Bravia | [Andres Jasso](https://unsplash.com/@andresjasso) | https://unsplash.com/photos/kAxq92OhMJM |
 | `apple-tv.jpg` | Apple TV | [Nicolas J Leclercq](https://unsplash.com/@nicolasjleclercq) | https://unsplash.com/photos/DsfFaMsY0fE |
-| `cafetera-espresso.jpg` | Cafetera espresso | [Tim St. Martin](https://unsplash.com/@timeighty5) | https://unsplash.com/photos/IjnAc0vyqGs |
+| `parlante-sony-ult-field-5.jpg` | Parlante Sony ULT Field 5 | [Jaimy de Hon](https://unsplash.com/@jaimydehon) | https://unsplash.com/photos/gs1WJZOn_dU |
 | `huawei-p20-pro.jpg` | Huawei P20 Pro | [Kamil Kot](https://unsplash.com/@kakoten) | https://unsplash.com/photos/-JUfltUcMG8 |
 | `iphone-15-pro.jpg` | Apple iPhone 15 Pro | [Sophia Stark](https://unsplash.com/@sambalina) | https://unsplash.com/photos/hOqqZAftlSo |
 | `smart-tv-samsung.jpg` | Smart TV Samsung | [Jonas Leupe](https://unsplash.com/@jonasleupe) | https://unsplash.com/photos/Fhwg7BrGUpk |
@@ -19,4 +19,3 @@ Todas las fotos son de [Unsplash](https://unsplash.com) y se usan bajo la [Licen
 
 Notas:
 - `televisor-sony-bravia.jpg` es un televisor sin marca visible (la foto no muestra un modelo Bravia en particular).
-- `cafetera-espresso.jpg` muestra una cafetera espresso hogareña sin marca visible.
