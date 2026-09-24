@@ -172,6 +172,18 @@
     <Content Include="Favoritos.aspx" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
+    <Content Include="Images\Articulos\airpods-pro.jpg" />
+    <Content Include="Images\Articulos\apple-tv.jpg" />
+    <Content Include="Images\Articulos\auriculares-sony-bluetooth.jpg" />
+    <Content Include="Images\Articulos\cafetera-espresso.jpg" />
+    <Content Include="Images\Articulos\huawei-p20-pro.jpg" />
+    <Content Include="Images\Articulos\iphone-15-pro.jpg" />
+    <Content Include="Images\Articulos\motorola-edge-60-fusion.jpg" />
+    <Content Include="Images\Articulos\playstation-4.jpg" />
+    <Content Include="Images\Articulos\samsung-galaxy-buds-live.jpg" />
+    <Content Include="Images\Articulos\samsung-galaxy-s25-ultra.jpg" />
+    <Content Include="Images\Articulos\smart-tv-samsung.jpg" />
+    <Content Include="Images\Articulos\televisor-sony-bravia.jpg" />
     <Content Include="Images\favicon.svg" />
     <Content Include="Images\sin-imagen.svg" />
     <Content Include="Login.aspx" />
@@ -261,6 +273,7 @@
     <Content Include="MasterPage.Master" />
     <Content Include="claves.config" />
     <Content Include="claves.config.example" />
+    <None Include="Images\Articulos\CREDITOS.md" />
     <None Include="packages.config" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
