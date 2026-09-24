@@ -22,14 +22,15 @@
                 
                 <h2 class="fw-bold mb-4">Configuración de Perfil</h2>
 
-                <%-- cartel de éxito (Oculto por defecto desde C#) --%>
+                <%-- cartel de éxito (Oculto por defecto desde C#). Se muestra después del Post/Redirect/Get,
+                     leyendo el mensaje flash de Session["mensajePerfil"] --%>
                 <div id="pnlExito" runat="server" visible="false" class="alert alert-success alert-dismissible fade show d-flex align-items-center shadow-sm mb-4" role="alert">
                     <%-- icono svg --%>
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-check-circle-fill me-3" viewBox="0 0 16 16">
                         <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
                     </svg>
                     <div>
-                        <strong>¡Excelente!</strong> Usuario actualizado satisfactoriamente.
+                        <strong>¡Excelente!</strong> <asp:Label ID="lblMensajeExito" runat="server" />
                     </div>
                    
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
@@ -50,7 +51,8 @@
                                 <div class="w-100 px-3">
                                     <label class="form-label text-muted small mb-1">Subir nueva foto (JPG/PNG)</label>
                                
-                                    <input type="file" id="txtImagen" runat="server" class="form-control form-control-sm" accept="image/*" onchange="previsualizar(this);" />
+                                    <input type="file" id="txtImagen" runat="server" ClientIDMode="Static" class="form-control form-control-sm" accept="image/*" onchange="previsualizar(this);" />
+                                    <asp:Label ID="lblErrorImagen" runat="server" CssClass="invalid-feedback" />
                                 </div>
                             </div>
 
@@ -68,10 +70,13 @@
                                     <div class="col-md-6 mb-3">
                                         <label class="form-label fw-bold">Nombre <span class="text-danger">*</span></label>
                                         <asp:TextBox runat="server" ID="txtNombre" CssClass="form-control" ClientIDMode="Static" />
+                                        <%-- Bootstrap solo muestra el invalid-feedback si el TextBox de arriba tiene is-invalid --%>
+                                        <asp:Label ID="lblErrorNombre" runat="server" CssClass="invalid-feedback" />
                                     </div>
                                     <div class="col-md-6 mb-3">
                                         <label class="form-label fw-bold">Apellido <span class="text-danger">*</span></label>
                                         <asp:TextBox runat="server" ID="txtApellido" CssClass="form-control" ClientIDMode="Static"/>
+                                        <asp:Label ID="lblErrorApellido" runat="server" CssClass="invalid-feedback" />
                                     </div>
                                 </div>
 
@@ -94,8 +99,72 @@
 
     <%--script de previsualización y actualización --%>
     <script>
-    
+        // Mismas reglas que ValidarNombreOApellido y ValidarImagen en MiPerfil.aspx.cs.
+        var REGEX_LETRAS = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/;
+        var EXTENSIONES_PERMITIDAS = [".jpg", ".jpeg", ".png"];
+        var TAMANIO_MAXIMO_BYTES = 2 * 1024 * 1024;
+
+        // Devuelve el mensaje de error del nombre o apellido, o null si está bien.
+        function errorNombreOApellido(etiqueta, valor) {
+            if (valor === "") return "El " + etiqueta + " es obligatorio.";
+            if (!REGEX_LETRAS.test(valor)) return "El " + etiqueta + " solo puede tener letras y espacios.";
+            if (valor.length > 50) return "El " + etiqueta + " no puede superar los 50 caracteres.";
+            return null;
+        }
+
+        // Devuelve el mensaje de error de la imagen elegida, o null si no hay imagen o está bien.
+        function errorImagen(input) {
+            if (!input.files || input.files.length === 0) return null;   // la imagen es opcional
+
+            var archivo = input.files[0];
+            var nombre = archivo.name.toLowerCase();
+            var extension = nombre.lastIndexOf(".") >= 0 ? nombre.substring(nombre.lastIndexOf(".")) : "";
+
+            if (EXTENSIONES_PERMITIDAS.indexOf(extension) < 0) return "Formato de imagen no permitido. Solo se aceptan archivos .jpg, .jpeg o .png.";
+            if (archivo.size > TAMANIO_MAXIMO_BYTES) return "La imagen es demasiado grande. El tamaño máximo permitido es 2 MB.";
+            return null;
+        }
+
+        // Pinta el campo de rojo o verde y escribe el mensaje en su invalid-feedback (con textContent, nunca innerHTML).
+        function mostrarResultado(input, mensaje) {
+            var feedback = input.parentNode.querySelector(".invalid-feedback");
+
+            if (mensaje) {
+                feedback.textContent = mensaje;
+                input.classList.add("is-invalid");
+                input.classList.remove("is-valid");
+                return false;
+            }
+
+            input.classList.remove("is-invalid");
+            return true;
+        }
+
+        function evaluarNombre() {
+            var input = document.getElementById("txtNombre");
+            var ok = mostrarResultado(input, errorNombreOApellido("nombre", input.value.trim()));
+            if (ok) input.classList.add("is-valid");
+            return ok;
+        }
+
+        function evaluarApellido() {
+            var input = document.getElementById("txtApellido");
+            var ok = mostrarResultado(input, errorNombreOApellido("apellido", input.value.trim()));
+            if (ok) input.classList.add("is-valid");
+            return ok;
+        }
+
+        function evaluarImagen() {
+            var input = document.getElementById("txtImagen");
+            return mostrarResultado(input, errorImagen(input));
+        }
+
+        // Al elegir un archivo: lo valido y, si está bien, muestro la vista previa.
         function previsualizar(input) {
+            if (!evaluarImagen()) {
+                return;
+            }
+
             if (input.files && input.files[0]) {
                 var reader = new FileReader();
                 reader.onload = function (e) {
@@ -105,60 +174,28 @@
             }
         }
 
-        // validación de nombres
+        // Se ejecuta al presionar Guardar (OnClientClick). Si devuelve false, se cancela el postback.
         function validar() {
-            const txtNombre = document.getElementById("txtNombre");
-            const txtApellido = document.getElementById("txtApellido");
-            let formularioValido = true;
+            // evalúo los tres (no corto en el primero) para que se marquen todos los errores juntos
+            var nombreOk = evaluarNombre();
+            var apellidoOk = evaluarApellido();
+            var imagenOk = evaluarImagen();
 
-            
-            const regexLetras = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/;
-
-           
-            if (txtNombre.value.trim() === "" || !regexLetras.test(txtNombre.value.trim())) {
-                txtNombre.classList.add("is-invalid");
-                txtNombre.classList.remove("is-valid");
-                formularioValido = false;
-            } else {
-                txtNombre.classList.remove("is-invalid");
-                txtNombre.classList.add("is-valid");
+            if (!nombreOk) {
+                document.getElementById("txtNombre").focus();
+            } else if (!apellidoOk) {
+                document.getElementById("txtApellido").focus();
             }
 
-            
-            if (txtApellido.value.trim() === "" || !regexLetras.test(txtApellido.value.trim())) {
-                txtApellido.classList.add("is-invalid");
-                txtApellido.classList.remove("is-valid");
-                formularioValido = false;
-            } else {
-                txtApellido.classList.remove("is-invalid");
-                txtApellido.classList.add("is-valid");
-            }
-
-            if (!formularioValido) {
-                alert("Por favor, completá tu nombre y apellido correctamente (solo letras).");
-            }
-
-            return formularioValido;
+            return nombreOk && apellidoOk && imagenOk;
         }
 
-       
-        document.addEventListener("DOMContentLoaded", function () {
-            const txtNombre = document.getElementById("txtNombre");
-            const txtApellido = document.getElementById("txtApellido");
+        // Mientras escribe, solo re-evalúo si el campo ya estaba en rojo (para no marcarlo antes de tiempo).
+        document.addEventListener("input", function (e) {
+            if (!e.target.classList.contains("is-invalid")) return;
 
-            [txtNombre, txtApellido].forEach(input => {
-                if (input) {
-                    input.addEventListener("input", function () {
-                        if (this.classList.contains("is-invalid")) {
-                            const regexLetras = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/;
-                            if (this.value.trim() !== "" && regexLetras.test(this.value.trim())) {
-                                this.classList.remove("is-invalid");
-                                this.classList.add("is-valid");
-                            }
-                        }
-                    });
-                }
-            });
+            if (e.target.id === "txtNombre") evaluarNombre();
+            if (e.target.id === "txtApellido") evaluarApellido();
         });
     </script>
 </asp:Content>
