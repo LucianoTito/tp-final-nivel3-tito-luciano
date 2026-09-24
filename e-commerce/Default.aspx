@@ -7,7 +7,7 @@
         <div class="col-md-6">
             <div class="input-group shadow-sm">
                 <asp:TextBox runat="server" ID="txtFiltro" CssClass="form-control" placeholder="Buscar producto..." />
-                <asp:Button Text="Buscar" runat="server" ID="btnBuscar" CssClass="btn btn-success" OnClick="btnBuscar_Click" />
+                <asp:Button Text="Buscar" runat="server" ID="btnBuscar" CssClass="btn btn-primary" OnClick="btnBuscar_Click" />
                 <asp:Button Text="Limpiar" runat="server" ID="btnLimpiar" CssClass="btn btn-outline-secondary" OnClick="btnLimpiar_Click" />
             </div>
         </div>
@@ -38,25 +38,27 @@
                     <div class="card-body d-flex flex-column">
                         <h5 class="card-title"><%: art.Nombre %></h5>
                         <p class="card-text flex-grow-1 text-muted"><%: art.Descripcion %></p>
-                        <p class="card-text fs-5 text-success fw-bold">$ <%: art.Precio.ToString("N2") %></p>
+                        <p class="card-text fs-5 precio">$ <%: art.Precio.ToString("N2") %></p>
                         
                         <%-- Botonera inferior de la tarjeta --%>
                         <div class="d-flex justify-content-between align-items-center mt-auto">
                             
                             <a href="Detalle.aspx?id=<%: art.Id %>" class="btn btn-primary w-100 me-2">Ver Detalles</a>
                             
-                            <%-- Lógica de Favoritos --%>
+                            <%-- Lógica de Favoritos: color de acento (ámbar), no rojo, porque no es un error ni algo que se borra.
+                                 ♥ / ♡ son caracteres de texto (toman el color del botón); los emoji ❤️ 🤍 traen su propio color fijo.
+                                 aria-label: para que un lector de pantalla diga la acción y no "corazón negro" --%>
                             <% if (Negocio.Seguridad.sesionActiva(Session["usuario"])) { %>
-                                
+
                                 <% if (ListaFavoritosUsuario.Contains(art.Id)) { %>
                                     <%-- ya es favorito: btn p/ quitar --%>
-                                    <a href="Default.aspx?idRm=<%: art.Id %>" class="btn btn-danger" title="Quitar de Favoritos">
-                                        ❤️
+                                    <a href="Default.aspx?idRm=<%: art.Id %>" class="btn btn-acento" title="Quitar de Favoritos" aria-label="Quitar de Favoritos">
+                                        &#9829;
                                     </a>
                                 <% } else { %>
-                                    <%-- no es favorito: btn rojo p/ agregar --%>
-                                    <a href="Default.aspx?idAdd=<%: art.Id %>" class="btn btn-outline-danger" title="Agregar a Favoritos">
-                                        🤍
+                                    <%-- no es favorito: btn p/ agregar --%>
+                                    <a href="Default.aspx?idAdd=<%: art.Id %>" class="btn btn-outline-acento" title="Agregar a Favoritos" aria-label="Agregar a Favoritos">
+                                        &#9825;
                                     </a>
                                 <% } %>
 

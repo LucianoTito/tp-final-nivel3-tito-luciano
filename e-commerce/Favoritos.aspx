@@ -9,7 +9,7 @@
 
         <%-- mje si la lista está vacía --%>
         <% if (ListaFavoritos == null || ListaFavoritos.Count == 0) { %>
-            <div class="alert alert-info text-center shadow-sm">
+            <div class="alert alert-primary text-center shadow-sm">
                 Aún no tenés artículos en tu lista de favoritos. ¡Andá al catálogo y guardá los que más te gusten!
             </div>
             <div class="text-center mt-3">
@@ -31,12 +31,13 @@
                             <div class="card-body d-flex flex-column">
                                 <h5 class="card-title"><%: art.Nombre %></h5>
                                 <p class="card-text flex-grow-1 text-muted"><%: art.Descripcion %></p>
-                                <p class="card-text fs-5 text-success fw-bold">$ <%: art.Precio.ToString("N2") %></p>
+                                <p class="card-text fs-5 precio">$ <%: art.Precio.ToString("N2") %></p>
                                 
                                 <div class="mt-auto">
                                     <a href="Detalle.aspx?id=<%: art.Id %>" class="btn btn-primary w-100 mb-2">Ver Detalles</a>
-                                    <%-- btn para sacarlo directamente --%>
-                                    <a href="Default.aspx?idRm=<%: art.Id %>" class="btn btn-outline-danger w-100">💔 Quitar de la lista</a>
+                                    <%-- btn para sacarlo directamente. outline-secondary y no rojo: quitar un favorito
+                                         no borra datos y se deshace con un click, no es una acción "peligrosa" --%>
+                                    <a href="Default.aspx?idRm=<%: art.Id %>" class="btn btn-outline-secondary w-100">💔 Quitar de la lista</a>
                                 </div>
                             </div>
                         </div>

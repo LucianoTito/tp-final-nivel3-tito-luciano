@@ -5,6 +5,214 @@
    ========================================== */
 
 /* ------------------------------------------
+   PALETA "AZUL Y ÁMBAR"
+   Criterio de uso:
+   - Primario (azul): acciones principales (Guardar, Buscar, Ver detalles, Agregar).
+   - Acento (ámbar): lo destacado (Registrarse, favoritos).
+   - Oscuro: navbar, footer y cabecera de la grilla.
+   - Verde: SOLO mensajes de éxito. Rojo: SOLO eliminar y errores.
+   Todos los pares texto/fondo cumplen contraste WCAG AA (4.5:1 texto, 3:1 bordes).
+   ------------------------------------------ */
+:root {
+    /* colores propios de la tienda, para usar en las reglas de abajo */
+    --tienda-primario: #1d4ed8;
+    --tienda-primario-hover: #1e40af;
+    --tienda-primario-activo: #1e3a8a;
+    --tienda-acento: #fbbf24;
+    --tienda-acento-hover: #f59e0b;
+    --tienda-texto-acento: #1c1917;
+    --tienda-oscuro: #0f172a;
+    --tienda-peligro: #c81e1e;
+    --tienda-peligro-hover: #a31919;
+
+    /* variables de Bootstrap: al redefinirlas cambian los componentes que las usan
+       (links, alertas, text-muted, text-primary, bg-primary, validación, etc.) */
+    --bs-body-bg: #f8fafc;
+    --bs-secondary-color: #5b6474;          /* text-muted: el gris de Bootstrap no llegaba a 4.5:1 sobre este fondo */
+
+    --bs-primary: #1d4ed8;
+    --bs-primary-rgb: 29, 78, 216;
+    --bs-primary-bg-subtle: #dbeafe;
+    --bs-primary-border-subtle: #bfdbfe;
+    --bs-primary-text-emphasis: #1e3a8a;
+
+    --bs-link-color: #1d4ed8;
+    --bs-link-color-rgb: 29, 78, 216;
+    --bs-link-hover-color: #1e40af;
+    --bs-link-hover-color-rgb: 30, 64, 175;
+
+    --bs-success: #15803d;
+    --bs-success-rgb: 21, 128, 61;
+    --bs-success-bg-subtle: #dcfce7;
+    --bs-success-border-subtle: #bbf7d0;
+    --bs-success-text-emphasis: #14532d;
+
+    --bs-danger: #c81e1e;
+    --bs-danger-rgb: 200, 30, 30;
+    --bs-danger-bg-subtle: #fee2e2;
+    --bs-danger-border-subtle: #fecaca;
+    --bs-danger-text-emphasis: #7f1d1d;
+
+    --bs-form-invalid-color: #c81e1e;
+    --bs-form-invalid-border-color: #c81e1e;
+    --bs-focus-ring-color: rgba(29, 78, 216, 0.35);
+}
+
+/* En Bootstrap 5.3 los botones NO leen --bs-primary: cada variante tiene sus propias variables
+   (--bs-btn-bg, --bs-btn-hover-bg, ...). Por eso se redefinen acá, con todos sus estados. */
+.btn-primary {
+    --bs-btn-color: #fff;
+    --bs-btn-bg: var(--tienda-primario);
+    --bs-btn-border-color: var(--tienda-primario);
+    --bs-btn-hover-color: #fff;
+    --bs-btn-hover-bg: var(--tienda-primario-hover);
+    --bs-btn-hover-border-color: var(--tienda-primario-hover);
+    --bs-btn-active-color: #fff;
+    --bs-btn-active-bg: var(--tienda-primario-activo);
+    --bs-btn-active-border-color: var(--tienda-primario-activo);
+    --bs-btn-disabled-color: #fff;
+    --bs-btn-disabled-bg: var(--tienda-primario);
+    --bs-btn-disabled-border-color: var(--tienda-primario);
+    --bs-btn-focus-shadow-rgb: 29, 78, 216;
+}
+
+.btn-outline-primary {
+    --bs-btn-color: var(--tienda-primario);
+    --bs-btn-border-color: var(--tienda-primario);
+    --bs-btn-hover-color: #fff;
+    --bs-btn-hover-bg: var(--tienda-primario);
+    --bs-btn-hover-border-color: var(--tienda-primario);
+    --bs-btn-active-color: #fff;
+    --bs-btn-active-bg: var(--tienda-primario-hover);
+    --bs-btn-active-border-color: var(--tienda-primario-hover);
+    --bs-btn-disabled-color: var(--tienda-primario);
+    --bs-btn-disabled-border-color: var(--tienda-primario);
+    --bs-btn-focus-shadow-rgb: 29, 78, 216;
+}
+
+.btn-danger {
+    --bs-btn-bg: var(--tienda-peligro);
+    --bs-btn-border-color: var(--tienda-peligro);
+    --bs-btn-hover-bg: var(--tienda-peligro-hover);
+    --bs-btn-hover-border-color: var(--tienda-peligro-hover);
+    --bs-btn-active-bg: var(--tienda-peligro-hover);
+    --bs-btn-active-border-color: var(--tienda-peligro-hover);
+    --bs-btn-disabled-bg: var(--tienda-peligro);
+    --bs-btn-disabled-border-color: var(--tienda-peligro);
+    --bs-btn-focus-shadow-rgb: 200, 30, 30;
+}
+
+.btn-outline-danger {
+    --bs-btn-color: var(--tienda-peligro);
+    --bs-btn-border-color: var(--tienda-peligro);
+    --bs-btn-hover-color: #fff;
+    --bs-btn-hover-bg: var(--tienda-peligro);
+    --bs-btn-hover-border-color: var(--tienda-peligro);
+    --bs-btn-active-color: #fff;
+    --bs-btn-active-bg: var(--tienda-peligro-hover);
+    --bs-btn-active-border-color: var(--tienda-peligro-hover);
+    --bs-btn-disabled-color: var(--tienda-peligro);
+    --bs-btn-disabled-border-color: var(--tienda-peligro);
+    --bs-btn-focus-shadow-rgb: 200, 30, 30;
+}
+
+/* Botones de acento (clases propias): Registrarse y favorito marcado.
+   Texto oscuro sobre ámbar: 10.48:1 (el blanco sobre ámbar no llegaría a 4.5:1). */
+.btn-acento {
+    --bs-btn-color: var(--tienda-texto-acento);
+    --bs-btn-bg: var(--tienda-acento);
+    --bs-btn-border-color: var(--tienda-acento);
+    --bs-btn-hover-color: var(--tienda-texto-acento);
+    --bs-btn-hover-bg: var(--tienda-acento-hover);
+    --bs-btn-hover-border-color: var(--tienda-acento-hover);
+    --bs-btn-active-color: var(--tienda-texto-acento);
+    --bs-btn-active-bg: var(--tienda-acento-hover);
+    --bs-btn-active-border-color: var(--tienda-acento-hover);
+    --bs-btn-disabled-color: var(--tienda-texto-acento);
+    --bs-btn-disabled-bg: var(--tienda-acento);
+    --bs-btn-disabled-border-color: var(--tienda-acento);
+    --bs-btn-focus-shadow-rgb: 251, 191, 36;
+}
+
+/* Favorito sin marcar: corazón vacío en azul con borde ámbar; al pasar el mouse se "enciende". */
+.btn-outline-acento {
+    --bs-btn-color: var(--tienda-primario);
+    --bs-btn-border-color: var(--tienda-acento-hover);
+    --bs-btn-hover-color: var(--tienda-texto-acento);
+    --bs-btn-hover-bg: var(--tienda-acento);
+    --bs-btn-hover-border-color: var(--tienda-acento);
+    --bs-btn-active-color: var(--tienda-texto-acento);
+    --bs-btn-active-bg: var(--tienda-acento-hover);
+    --bs-btn-active-border-color: var(--tienda-acento-hover);
+    --bs-btn-focus-shadow-rgb: 251, 191, 36;
+}
+
+/* Foco y checkbox: en Bootstrap 5.3.2 vienen con el azul por defecto escrito fijo (#86b7fe / #0d6efd),
+   no usan variables, así que hay que pisarlos a mano. */
+.form-control:focus,
+.form-select:focus,
+.form-check-input:focus {
+    border-color: var(--tienda-primario);
+    box-shadow: 0 0 0 0.25rem rgba(29, 78, 216, 0.35);
+}
+
+.form-check-input:checked {
+    background-color: var(--tienda-primario);
+    border-color: var(--tienda-primario);
+}
+
+/* Foco con teclado bien visible. El halo semitransparente de Bootstrap tiene muy poco contraste
+   (el azul al 35% sobre blanco da 1.79:1; para indicadores de foco se pide al menos 3:1).
+   Agrego un contorno sólido: azul sobre fondo claro (6.70:1) y blanco sobre el navbar oscuro (17.85:1),
+   porque el azul sobre el navbar no llega a 3:1. :focus-visible = solo al navegar con teclado, no con el mouse. */
+.btn:focus-visible,
+.form-check-input:focus-visible {
+    outline: 2px solid var(--tienda-primario);
+    outline-offset: 2px;
+}
+
+.navbar-marca .btn:focus-visible,
+.navbar-marca .nav-link:focus-visible,
+.navbar-marca .navbar-brand:focus-visible {
+    outline: 2px solid #fff;
+    outline-offset: 2px;
+}
+
+/* Navbar y footer con el oscuro de la paleta.
+   Los links del navbar pasan de 55% a 75% de opacidad: se leen mejor (10.34:1). */
+.navbar-marca {
+    background-color: var(--tienda-oscuro);
+    --bs-navbar-color: rgba(255, 255, 255, 0.75);
+    --bs-navbar-hover-color: #fff;
+}
+
+.footer-marca {
+    background-color: var(--tienda-oscuro);
+    color: #fff;
+}
+
+/* Cabecera de la grilla admin (reemplaza a table-dark). Va en la fila (HeaderStyle del GridView)
+   y las celdas heredan las variables. Se redefinen también las de rayado y hover para que
+   la cabecera no cambie de color si queda como primera fila del tbody (pasa después de un postback). */
+.encabezado-grilla {
+    --bs-table-color: #fff;
+    --bs-table-bg: var(--tienda-oscuro);
+    --bs-table-border-color: var(--tienda-oscuro);
+    --bs-table-striped-color: #fff;
+    --bs-table-striped-bg: var(--tienda-oscuro);
+    --bs-table-hover-color: #fff;
+    --bs-table-hover-bg: var(--tienda-oscuro);
+    --bs-table-active-color: #fff;
+    --bs-table-active-bg: var(--tienda-oscuro);
+}
+
+/* Precio: en el color de texto y en negrita. Antes era verde, pero el verde queda solo para "éxito". */
+.precio {
+    color: var(--bs-body-color);
+    font-weight: 700;
+}
+
+/* ------------------------------------------
    IMÁGENES DE ARTÍCULOS
    El marco (div) tiene una proporción fija con aspect-ratio: todas las imágenes
    ocupan el mismo espacio, sin importar el tamaño original de la foto.

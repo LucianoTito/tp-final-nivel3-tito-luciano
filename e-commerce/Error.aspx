@@ -17,7 +17,7 @@
                     </p>
 
                     <div class="mt-4">
-                        <asp:Button ID="btnVolver" runat="server" Text="Volver al Inicio" CssClass="btn btn-outline-danger btn-lg px-4" OnClick="btnVolver_Click" />
+                        <asp:Button ID="btnVolver" runat="server" Text="Volver al Inicio" CssClass="btn btn-primary btn-lg px-4" OnClick="btnVolver_Click" />
                     </div>
                 </div>
             </div>

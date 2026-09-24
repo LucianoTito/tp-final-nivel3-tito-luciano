@@ -94,7 +94,8 @@
                 <asp:GridView ID="dgvArticulos" runat="server" CssClass="table table-striped table-hover table-bordered mb-0 align-middle" 
                     AutoGenerateColumns="false" DataKeyNames="Id" OnSelectedIndexChanged="dgvArticulos_SelectedIndexChanged">
                     
-                    <HeaderStyle CssClass="table-dark" />
+                    <%-- encabezado-grilla (estilos.css): cabecera con el oscuro de la paleta --%>
+                    <HeaderStyle CssClass="encabezado-grilla" />
 
                     <%-- se muestra en lugar de la grilla cuando la lista viene vacía --%>
                     <EmptyDataTemplate>
@@ -167,7 +168,7 @@
     <div class="row">
         <div class="col">
             <%-- Btn para ir al formulario de alta --%>
-            <a href="ArticuloForm.aspx" class="btn btn-success fw-bold">➕ Agregar Nuevo Artículo</a>
+            <a href="ArticuloForm.aspx" class="btn btn-primary fw-bold">➕ Agregar Nuevo Artículo</a>
         </div>
     </div>
 

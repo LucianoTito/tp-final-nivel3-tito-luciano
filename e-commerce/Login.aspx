@@ -14,35 +14,35 @@
             box-shadow: 0 1rem 3rem rgba(0,0,0,.175) !important;
         }
         
+        /* Los colores salen de las variables de la paleta (estilos.css): antes estaban escritos fijos
+           (#0d6efd, #00d2ff, #6c757d) y no hubieran cambiado con la paleta. */
+
         /* Efecto de brillo (Glow) para las cajas de texto al hacer clic */
         .form-control:focus {
-            box-shadow: 0 0 15px rgba(13, 110, 253, 0.4);
-            border-color: #0d6efd;
+            box-shadow: 0 0 15px rgba(var(--bs-primary-rgb), 0.4);
+            border-color: var(--bs-primary);
             transform: scale(1.01);
             transition: all 0.2s ease-in-out;
         }
 
+        /* btn-magico se usa junto con btn-primary: el color lo pone la paleta, esta clase solo agrega el movimiento */
         .btn-magico {
-            background: linear-gradient(45deg, #0d6efd, #00d2ff);
-            border: none;
             transition: all 0.3s ease;
-            background-size: 200% auto;
         }
         .btn-magico:hover {
-            background-position: right center;
             transform: scale(1.03);
-            box-shadow: 0 8px 20px rgba(13, 110, 253, 0.5);
+            box-shadow: 0 8px 20px rgba(var(--bs-primary-rgb), 0.5);
         }
 
         .btn-cancelar-hover {
-            color: #6c757d; 
+            color: var(--bs-secondary-color);
             text-decoration: none;
-            transition: all 0.3s ease; 
+            transition: all 0.3s ease;
         }
         .btn-cancelar-hover:hover {
-            color: #0d6efd !important; 
-            transform: scale(1.02); 
-            text-shadow: 0 0 8px rgba(13, 110, 253, 0.3); 
+            color: var(--bs-link-hover-color) !important;
+            transform: scale(1.02);
+            text-shadow: 0 0 8px rgba(var(--bs-primary-rgb), 0.3);
         }
     </style>
 </asp:Content>
@@ -76,7 +76,7 @@
                     <asp:Label runat="server" ID="lblError" CssClass="text-danger mb-3 d-block text-center fw-bold" Visible="false" />
 
                     <div class="d-grid gap-2 mt-4">
-                        <asp:Button Text="Ingresar" runat="server" ID="btnIngresar" CssClass="btn btn-lg btn-magico text-white fw-bold" OnClick="btnIngresar_Click" />
+                        <asp:Button Text="Ingresar" runat="server" ID="btnIngresar" CssClass="btn btn-lg btn-primary btn-magico fw-bold" OnClick="btnIngresar_Click" />
                         
  
                         <a href="Default.aspx" class="btn btn-link mt-2 btn-cancelar-hover">⬅ Cancelar y volver al catálogo</a>

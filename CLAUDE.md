@@ -52,6 +52,7 @@ Dependencias en un solo sentido: `e-commerce` → `Negocio` → `Dominio`.
   - Nunca proteger una página con `if (...) Response.Redirect(url, false)` en `Page_Load`: el redirect no corta el ciclo de vida y los eventos de los botones se ejecutan igual.
   - `Seguridad.sesionActiva` / `Seguridad.esAdmin` se siguen usando para mostrar u ocultar cosas (ej: botones del navbar, favoritos en `Default`).
 - Los mensajes que se disparan desde el servidor se registran con `ScriptManager.RegisterStartupScript`.
+- Colores (paleta "Azul y ámbar", definida en `Content/estilos.css`): `btn-primary` para acciones principales, `btn-outline-secondary` / `btn-outline-primary` para secundarias, `btn-acento` / `btn-outline-acento` para lo destacado (Registrarse, favoritos), rojo (`danger`) solo para eliminar y errores, verde (`success`) solo para mensajes de éxito. Navbar, footer y cabecera de grilla usan `navbar-marca`, `footer-marca` y `encabezado-grilla`. No usar `btn-warning` / `btn-info` ni colores hexadecimales fijos en las páginas: siempre las variables de la paleta.
 
 ## Estructura del proyecto
 

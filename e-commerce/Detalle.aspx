@@ -22,7 +22,7 @@
                 <h2 class="fw-bold"><%: ArticuloSeleccionado.Nombre %></h2>
                 <p class="text-muted">Código de Producto: <%: ArticuloSeleccionado.Codigo %></p>
                 
-                <h3 class="text-success fw-bold mt-4">$ <%: ArticuloSeleccionado.Precio.ToString("N2") %></h3>
+                <h3 class="precio mt-4">$ <%: ArticuloSeleccionado.Precio.ToString("N2") %></h3>
                 
                 <p class="mt-4 fs-5"><%: ArticuloSeleccionado.Descripcion %></p>
 

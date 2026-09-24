@@ -20,7 +20,9 @@
     <form id="form1" runat="server" class="d-flex flex-column flex-grow-1">
         
         <%-- navbar de boostrap --%>
-        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <%-- navbar-marca (estilos.css): fondo oscuro de la paleta. Todos los botones de navegación van en
+             outline-light; el único con color es "Registrarse" (acento), la llamada a la acción para visitantes --%>
+        <nav class="navbar navbar-expand-lg navbar-dark navbar-marca">
           <div class="container">
             <a class="navbar-brand" href="Default.aspx">🛒 <%: NombreTienda %></a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -42,13 +44,13 @@
                       <a href="Login.aspx" class="btn btn-outline-light me-2">Iniciar Sesión</a>
                       
                   
-                      <a href="Registro.aspx" class="btn btn-primary fw-bold">Registrarse</a>
+                      <a href="Registro.aspx" class="btn btn-acento fw-bold">Registrarse</a>
                   
                   <% } else { %>
                       
                      
                       <% if (Negocio.Seguridad.esAdmin(Session["usuario"])) { %>
-                          <a href="ArticulosLista.aspx" class="btn btn-warning me-3 fw-bold">⚙ Administrar Catálogo</a>
+                          <a href="ArticulosLista.aspx" class="btn btn-outline-light me-3 fw-bold">⚙ Administrar Catálogo</a>
                       <% } %>
                       
                       <%-- zona del usuario logueado (avatar, nombre, Mi Perfil y salir) --%>
@@ -56,10 +58,11 @@
                       <asp:Label ID="lblUser" runat="server" CssClass="text-light me-3 fw-bold"></asp:Label>
                       
                       <%-- btn miPerfil --%>
-                      <a href="MiPerfil.aspx" class="btn btn-sm btn-outline-info me-3">👤 Mi Perfil</a>
-                      <a href="Favoritos.aspx" class="btn btn-sm btn-outline-warning me-3">❤️ Favoritos</a>
-                      
-                      <asp:Button Text="Salir" ID="btnSalir" CssClass="btn btn-sm btn-outline-danger" OnClick="btnSalir_Click" runat="server" />
+                      <a href="MiPerfil.aspx" class="btn btn-sm btn-outline-light me-3">👤 Mi Perfil</a>
+                      <a href="Favoritos.aspx" class="btn btn-sm btn-outline-light me-3">♥ Favoritos</a>
+
+                      <%-- Salir no es una acción destructiva (no borra datos): va en outline-light como el resto --%>
+                      <asp:Button Text="Salir" ID="btnSalir" CssClass="btn btn-sm btn-outline-light" OnClick="btnSalir_Click" runat="server" />
                   
                   <% } %>
               </div>
@@ -71,7 +74,7 @@
         </div>
 
         <%-- footer  --%>
-        <footer class="bg-dark text-white text-center py-3 mt-auto">
+        <footer class="footer-marca text-center py-3 mt-auto">
             <div class="container">
                 <p class="mb-0">&copy; <%: DateTime.Now.Year %> - <%: NombreTienda %>. Todos los derechos reservados.</p>
             </div>
