@@ -271,7 +271,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="MasterPage.Master" />
-    <Content Include="claves.config" />
+    <None Include="claves.config" />
     <Content Include="claves.config.example" />
     <None Include="Images\Articulos\CREDITOS.md" />
     <None Include="packages.config" />
