@@ -42,7 +42,7 @@ El panel de administración (alta, modificación, baja y filtros de artículos) 
 ## ⚙️ Preparación y Puesta en Marcha
 
 1. **Clonar el repositorio** y abrir la solución `TpFinalNivel3TitoLuciano.slnx` en Visual Studio.
-2. **Crear la base de datos:** ejecutar `Script_Catalogo_DB.sql` (en la raíz) en SQL Server Management Studio. Crea la base `CATALOGO_WEB_DB` y carga los datos iniciales de prueba.
+2. **Crear la base de datos:** en SQL Server Management Studio, crear una base vacía (`CREATE DATABASE CATALOGO_WEB_DB;`) y ejecutar sobre ella `Script_Catalogo_DB.sql` (en la raíz), que crea las tablas y carga los datos iniciales de prueba. En un hosting compartido, ejecutarlo directamente sobre la base que da el hosting.
 3. **Configurar la conexión:**
    - En la carpeta `e-commerce`, copiar `claves.config.example` y renombrar la copia como `claves.config`.
    - Completar la cadena de conexión con los datos de tu servidor SQL.
