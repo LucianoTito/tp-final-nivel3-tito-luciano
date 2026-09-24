@@ -38,8 +38,10 @@
 
                 <div class="card shadow-sm border-0">
                     <div class="card-body p-4">
-                        <div class="row">
-                            
+                        <%-- asp:Panel con DefaultButton: Enter en Nombre o Apellido "clickea" Guardar (y pasa por validar()).
+                             Sin esto, Enter dispara el primer botón del form, que es "Salir" del navbar (y cierra la sesión) --%>
+                        <asp:Panel runat="server" DefaultButton="btnGuardar" CssClass="row">
+
                             <%-- columna de foto de perfil --%>
                             <div class="col-md-4 d-flex flex-column align-items-center mb-4 mb-md-0 border-end">
                                 <h5 class="fw-bold text-muted mb-3">Tu Avatar</h5>
@@ -89,7 +91,7 @@
                                 </div>
                             </div>
 
-                        </div>
+                        </asp:Panel>
                     </div>
                 </div>
 

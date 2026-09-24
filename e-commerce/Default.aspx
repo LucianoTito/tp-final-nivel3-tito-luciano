@@ -5,11 +5,13 @@
     <%--  BARRA DE BÚSQUEDA --%>
     <div class="row mb-4">
         <div class="col-md-6">
-            <div class="input-group shadow-sm">
+            <%-- asp:Panel con DefaultButton: Enter en el buscador "clickea" Buscar. Sin esto, con sesión iniciada,
+                 Enter dispara el primer botón del form, que es "Salir" del navbar (y cierra la sesión) --%>
+            <asp:Panel runat="server" DefaultButton="btnBuscar" CssClass="input-group shadow-sm">
                 <asp:TextBox runat="server" ID="txtFiltro" CssClass="form-control" placeholder="Buscar producto..." />
                 <asp:Button Text="Buscar" runat="server" ID="btnBuscar" CssClass="btn btn-primary" OnClick="btnBuscar_Click" />
                 <asp:Button Text="Limpiar" runat="server" ID="btnLimpiar" CssClass="btn btn-outline-secondary" OnClick="btnLimpiar_Click" />
-            </div>
+            </asp:Panel>
         </div>
     </div>
 
