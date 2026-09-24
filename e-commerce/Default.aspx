@@ -16,7 +16,9 @@
     <%-- CARTEL FLASH DE FAVORITOS --%>
     <% if (Session["mensajeFav"] != null) { %>
         <div class="alert alert-success alert-dismissible fade show text-center fw-bold shadow-sm" role="alert">
-            <%= Session["mensajeFav"].ToString() %>
+            <%-- <%: %> codifica el texto (regla 4): aunque hoy el mensaje es fijo, si algún día incluye un dato
+                 (ej: el nombre del artículo), no se podría inyectar HTML --%>
+            <%: Session["mensajeFav"] %>
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
         <%-- borro el mensaje de la memoria para que no vuelva a salir si el usuario aprieta F5 --%>
