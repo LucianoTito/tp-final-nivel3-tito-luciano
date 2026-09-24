@@ -1,4 +1,5 @@
-﻿<%@ Page Title="" Language="C#" MasterPageFile="~/MasterPage.Master" AutoEventWireup="true" CodeBehind="Detalle.aspx.cs" Inherits="e_commerce.Detalle" %>
+﻿<%@ Page Language="C#" MasterPageFile="~/MasterPage.Master" AutoEventWireup="true" CodeBehind="Detalle.aspx.cs" Inherits="e_commerce.Detalle" %>
+<%-- Sin Title en la directiva a propósito: Title="" se aplica DESPUÉS del Page_Load y pisaría el nombre del artículo que pone Detalle.aspx.cs. Si no hay artículo, la Master pone solo el nombre de la tienda. --%>
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="MainContent" runat="server">
