@@ -45,7 +45,12 @@ Dependencias en un solo sentido: `e-commerce` → `Negocio` → `Dominio`.
 - Métodos de `*Negocio`: `new AccesoDatos()` → `try` / `catch { throw; }` / `finally { datos.CerrarConexion(); }`.
 - Manejo de errores en las páginas: `System.Diagnostics.Debug.WriteLine(ex.ToString())` para el detalle técnico (solo se ve en la ventana Salida de Visual Studio), `Session.Add("error", "<mensaje amigable>")` y `Response.Redirect("Error.aspx", false)`. Al usuario nunca se le muestra `ex.ToString()` ni `ex.Message`.
 - Claves de sesión: `"usuario"` (objeto `Usuario`), `"listaArticulos"`, `"mensajeFav"`, `"error"`.
-- Control de acceso: `Seguridad.sesionActiva(Session["usuario"])` y `Seguridad.esAdmin(Session["usuario"])`, al principio del `Page_Load`.
+- Control de acceso: una página protegida **hereda** de una clase base en lugar de `System.Web.UI.Page`:
+  - `PaginaConSesion` (requiere usuario logueado; si no, redirige a `Login.aspx`). La usan `MiPerfil` y `Favoritos`.
+  - `PaginaAdmin` (requiere admin; si no, redirige a `Error.aspx` con "Acceso denegado"). La usan `ArticulosLista` y `ArticuloForm`.
+  - Las dos cortan en `ProcessRequest`: si no hay acceso, la página no se ejecuta (ni `Page_Load`, ni eventos de botones, ni render). No repetir el chequeo en `Page_Load` ni en los eventos.
+  - Nunca proteger una página con `if (...) Response.Redirect(url, false)` en `Page_Load`: el redirect no corta el ciclo de vida y los eventos de los botones se ejecutan igual.
+  - `Seguridad.sesionActiva` / `Seguridad.esAdmin` se siguen usando para mostrar u ocultar cosas (ej: botones del navbar, favoritos en `Default`).
 - Los mensajes que se disparan desde el servidor se registran con `ScriptManager.RegisterStartupScript`.
 
 ## Estructura del proyecto
@@ -73,4 +78,3 @@ Dependencias en un solo sentido: `e-commerce` → `Negocio` → `Dominio`.
 
 - `MiPerfil.aspx` usa `alert()` nativo en la validación de nombre y apellido. Va contra la regla 6.
 - `Default.aspx` muestra `Session["mensajeFav"]` con `<%= %>`. Hay que pasarlo a `<%: %>` (regla 4).
-- `Error.aspx` muestra `ex.ToString()` al usuario (stack trace, rutas y detalles internos). Lo correcto sería mostrar un mensaje amigable y dejar el detalle técnico solo para depuración.

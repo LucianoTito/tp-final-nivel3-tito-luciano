@@ -10,7 +10,9 @@ using Negocio;
 
 namespace e_commerce
 {
-    public partial class MiPerfil : System.Web.UI.Page
+    //PaginaConSesion: si no hay usuario logueado, la página no se ejecuta y se redirige al login.
+    //Antes el chequeo estaba solo dentro de !IsPostBack: en un postback sin sesión, btnGuardar_Click corría igual.
+    public partial class MiPerfil : PaginaConSesion
     {
         // Whitelist de extensiones de imagen permitidas (validación del lado del servidor).
         private static readonly string[] ExtensionesPermitidas = { ".jpg", ".jpeg", ".png" };
@@ -26,12 +28,6 @@ namespace e_commerce
             {
                 if (!IsPostBack)
                 {
-                    if (!Seguridad.sesionActiva(Session["usuario"]))
-                    {
-                        Response.Redirect("Login.aspx", false);
-                        return;
-                    }
-
                     Usuario user = (Usuario)Session["usuario"];
 
                     txtEmail.Text = user.Email;

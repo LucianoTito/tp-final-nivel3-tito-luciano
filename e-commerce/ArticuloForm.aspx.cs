@@ -11,17 +11,11 @@ using Dominio;
 
 namespace e_commerce
 {
-    public partial class ArticuloForm : System.Web.UI.Page
+    //PaginaAdmin: si el usuario no es admin, la página no se ejecuta (ver PaginaConSesion.ProcessRequest).
+    public partial class ArticuloForm : PaginaAdmin
     {
         protected void Page_Load(object sender, EventArgs e)
         {
-            if (!Seguridad.esAdmin(Session["usuario"]))
-            {
-                Session.Add("error", "Acceso denegado. Se requieren permisos de administrador para operar aquí.");
-                Response.Redirect("Error.aspx", false);
-                return; // CORTA la ejecución: sin esto, un no-admin seguía cargando dropdowns y datos igual.
-            }
-
             //Limpio los errores en cada request: CssClass, Text y los atributos se guardan en el ViewState,
             //así que si no los reseteo, el rojo quedaría pegado en el próximo postback.
             LimpiarErrores();

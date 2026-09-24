@@ -9,19 +9,14 @@ using Negocio;
 
 namespace e_commerce
 {
-    public partial class Favoritos : System.Web.UI.Page
+    //PaginaConSesion: si no hay usuario logueado, la página no se ejecuta y se redirige al login.
+    public partial class Favoritos : PaginaConSesion
     {
         public List<Articulo> ListaFavoritos { get; set; } = new List<Articulo>(); //lee el foreach del html
         protected void Page_Load(object sender, EventArgs e)
         {
             try
             {
-                if (!Seguridad.sesionActiva(Session["usuario"]))
-                {
-                    Response.Redirect("Login.aspx", false);
-                    return;
-                }
-
                 Usuario user = (Usuario)Session["usuario"];
                 FavoritoNegocio negocio = new FavoritoNegocio();
 

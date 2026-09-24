@@ -244,6 +244,8 @@
     <Compile Include="MiPerfil.aspx.designer.cs">
       <DependentUpon>MiPerfil.aspx</DependentUpon>
     </Compile>
+    <Compile Include="PaginaAdmin.cs" />
+    <Compile Include="PaginaConSesion.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Registro.aspx.cs">
       <DependentUpon>Registro.aspx</DependentUpon>

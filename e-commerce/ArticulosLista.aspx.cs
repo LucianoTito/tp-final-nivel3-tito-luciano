@@ -10,7 +10,8 @@ using Negocio;
 
 namespace e_commerce
 {
-    public partial class ArticulosLista : System.Web.UI.Page
+    //PaginaAdmin: si el usuario no es admin, la página no se ejecuta (ver PaginaConSesion.ProcessRequest).
+    public partial class ArticulosLista : PaginaAdmin
     {
         public bool FiltroAvanzado { get; set; }
 
@@ -26,13 +27,6 @@ namespace e_commerce
 
             chkAvanzado.InputAttributes.Add("class", "form-check-input border-secondary");
 
-            if (!Seguridad.esAdmin(Session["usuario"]))
-            {
-                //Si no es admin le mando la pantalla de error
-                Session.Add("error", "Acceso denegado. Se requieren permisos de administrador para operar en esta sección.");
-                Response.Redirect("Error.aspx", false);
-                return;
-            }
             //Cargo los datos
             try
             {
@@ -203,14 +197,8 @@ namespace e_commerce
 
         protected void btnConfirmarEliminar_Click(object sender, EventArgs e)
         {
-            //Vuelvo a verificar que sea admin ACÁ, no alcanza con el Page_Load: Response.Redirect(..., false)
-            //no corta el ciclo de vida, así que este evento se ejecutaría igual para un usuario no admin.
-            if (!Seguridad.esAdmin(Session["usuario"]))
-            {
-                Session.Add("error", "Acceso denegado. Se requieren permisos de administrador para operar en esta sección.");
-                Response.Redirect("Error.aspx", false);
-                return;
-            }
+            //No hace falta verificar acá que sea admin: si no lo es, PaginaAdmin no deja ejecutar la página
+            //(y por lo tanto este evento nunca corre).
 
             //El Id viene del campo oculto, que se puede manipular desde el navegador: primero, que sea un número.
             if (!int.TryParse(hfIdEliminar.Value, out int id))
