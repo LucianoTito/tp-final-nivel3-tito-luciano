@@ -51,7 +51,12 @@ Dependencias en un solo sentido: `e-commerce` → `Negocio` → `Dominio`.
   - Las dos cortan en `ProcessRequest`: si no hay acceso, la página no se ejecuta (ni `Page_Load`, ni eventos de botones, ni render). No repetir el chequeo en `Page_Load` ni en los eventos.
   - Nunca proteger una página con `if (...) Response.Redirect(url, false)` en `Page_Load`: el redirect no corta el ciclo de vida y los eventos de los botones se ejecutan igual.
   - `Seguridad.sesionActiva` / `Seguridad.esAdmin` se siguen usando para mostrar u ocultar cosas (ej: botones del navbar, favoritos en `Default`).
-- Los mensajes que se disparan desde el servidor se registran con `ScriptManager.RegisterStartupScript`.
+- Mensajes al usuario (cliente y servidor): con componentes de Bootstrap, nunca con `alert()` ni `RegisterStartupScript`.
+  - Errores de un campo: `is-invalid` en el control + un `asp:Label` con `invalid-feedback` justo después (el servidor pone `CssClass` y `Text`; el JS usa `classList` y `textContent`). Resetear clases y textos en `Page_Load`, porque quedan en el ViewState.
+  - Mensajes generales (éxito, error, advertencia): un `alert` de Bootstrap que el servidor muestra u oculta.
+  - Todo texto que el servidor pone en un `Label` o en `Page.Title` se codifica con `HttpUtility.HtmlEncode`, porque esos controles lo escriben tal cual en el HTML.
+  - Después de guardar con éxito: Post/Redirect/Get, con el mensaje como flash en `Session` (se muestra una vez y se borra), así F5 no reenvía el formulario.
+- Formularios con TextBox: envolverlos en `asp:Panel DefaultButton="..."`. Si no, con sesión iniciada Enter dispara el primer botón del form, que es "Salir" del navbar.
 - Colores (paleta "Azul y ámbar", definida en `Content/estilos.css`): `btn-primary` para acciones principales, `btn-outline-secondary` / `btn-outline-primary` para secundarias, `btn-acento` / `btn-outline-acento` para lo destacado (Registrarse, favoritos), rojo (`danger`) solo para eliminar y errores, verde (`success`) solo para mensajes de éxito. Navbar, footer y cabecera de grilla usan `navbar-marca`, `footer-marca` y `encabezado-grilla`. No usar `btn-warning` / `btn-info` ni colores hexadecimales fijos en las páginas: siempre las variables de la paleta.
 
 ## Estructura del proyecto
@@ -77,5 +82,4 @@ Dependencias en un solo sentido: `e-commerce` → `Negocio` → `Dominio`.
 
 ## Deuda conocida (candidata a las mejoras de UX)
 
-- `MiPerfil.aspx` usa `alert()` nativo en la validación de nombre y apellido. Va contra la regla 6.
-- `Default.aspx` muestra `Session["mensajeFav"]` con `<%= %>`. Hay que pasarlo a `<%: %>` (regla 4).
+Sin deuda conocida por ahora.
